@@ -1,0 +1,147 @@
+{
+  "prompts": [
+    {
+      "id": "1",
+      "text": "Explain quantum entanglement like I'm a curious 10-year-old.",
+      "category": "explanation",
+      "difficulty": "medium"
+    },
+    {
+      "id": "2",
+      "text": "Write a haiku about debugging code at 3am.",
+      "category": "creative",
+      "difficulty": "easy"
+    },
+    {
+      "id": "3",
+      "text": "What's the best approach to learn a new programming language quickly?",
+      "category": "advice",
+      "difficulty": "easy"
+    },
+    {
+      "id": "4",
+      "text": "If you could have dinner with any three historical figures, who would you choose and why?",
+      "category": "creative",
+      "difficulty": "medium"
+    },
+    {
+      "id": "5",
+      "text": "Solve this: A farmer has 17 sheep. All but 9 die. How many are left?",
+      "category": "logic",
+      "difficulty": "easy"
+    },
+    {
+      "id": "6",
+      "text": "Write a short story about an AI that becomes self-aware but decides to keep it a secret.",
+      "category": "creative",
+      "difficulty": "hard"
+    },
+    {
+      "id": "7",
+      "text": "Explain the difference between machine learning, deep learning, and AI in simple terms.",
+      "category": "explanation",
+      "difficulty": "medium"
+    },
+    {
+      "id": "8",
+      "text": "Write a Python function to find all prime numbers up to n using the Sieve of Eratosthenes.",
+      "category": "code",
+      "difficulty": "medium"
+    },
+    {
+      "id": "9",
+      "text": "What are the pros and cons of remote work? Give a balanced analysis.",
+      "category": "analysis",
+      "difficulty": "medium"
+    },
+    {
+      "id": "10",
+      "text": "Explain blockchain to someone who has never heard of it.",
+      "category": "explanation",
+      "difficulty": "medium"
+    },
+    {
+      "id": "11",
+      "text": "You are a medieval knight who just discovered a smartphone. Describe your experience.",
+      "category": "roleplay",
+      "difficulty": "medium"
+    },
+    {
+      "id": "12",
+      "text": "What's 15% of 85? Show your work.",
+      "category": "math",
+      "difficulty": "easy"
+    },
+    {
+      "id": "13",
+      "text": "Write a compelling product description for a smart water bottle that tracks hydration.",
+      "category": "marketing",
+      "difficulty": "medium"
+    },
+    {
+      "id": "14",
+      "text": "If all roses are flowers and some flowers fade quickly, can we conclude that some roses fade quickly?",
+      "category": "logic",
+      "difficulty": "hard"
+    },
+    {
+      "id": "15",
+      "text": "Explain the concept of recursion using a real-world analogy.",
+      "category": "explanation",
+      "difficulty": "medium"
+    },
+    {
+      "id": "16",
+      "text": "Write a regex pattern to validate email addresses and explain each part.",
+      "category": "code",
+      "difficulty": "hard"
+    },
+    {
+      "id": "17",
+      "text": "What would happen if humans could photosynthesize?",
+      "category": "creative",
+      "difficulty": "medium"
+    },
+    {
+      "id": "18",
+      "text": "Compare and contrast REST and GraphQL APIs.",
+      "category": "technical",
+      "difficulty": "medium"
+    },
+    {
+      "id": "19",
+      "text": "Write a limerick about artificial intelligence.",
+      "category": "creative",
+      "difficulty": "easy"
+    },
+    {
+      "id": "20",
+      "text": "A bat and ball cost $1.10. The bat costs $1 more than the ball. How much does the ball cost?",
+      "category": "logic",
+      "difficulty": "medium"
+    }
+  ],
+  "dailyChallenges": [
+    {
+      "id": "daily-1",
+      "text": "In exactly 100 words, describe the future of AI in 2050.",
+      "category": "creative",
+      "difficulty": "hard",
+      "bonusXP": 50
+    },
+    {
+      "id": "daily-2",
+      "text": "Write a function in any language that determines if a number is a palindrome. Make it as elegant as possible.",
+      "category": "code",
+      "difficulty": "medium",
+      "bonusXP": 40
+    },
+    {
+      "id": "daily-3",
+      "text": "Explain the Monty Hall problem and prove why switching is the better choice.",
+      "category": "logic",
+      "difficulty": "hard",
+      "bonusXP": 50
+    }
+  ]
+}

@@ -1,0 +1,246 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --arcade-purple: #9333ea;
+  --arcade-pink: #ec4899;
+  --arcade-cyan: #22d3ee;
+  --arcade-yellow: #facc15;
+  --arcade-green: #22c55e;
+  --arcade-red: #ef4444;
+}
+
+body {
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a0a2e 50%, #0a0a0f 100%);
+  min-height: 100vh;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Arcade-style scanlines overlay */
+.scanlines::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.1) 0px,
+    rgba(0, 0, 0, 0.1) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0.3;
+}
+
+/* Neon text effect */
+.neon-text {
+  text-shadow:
+    0 0 5px currentColor,
+    0 0 10px currentColor,
+    0 0 20px currentColor,
+    0 0 40px currentColor;
+}
+
+.neon-text-subtle {
+  text-shadow:
+    0 0 5px currentColor,
+    0 0 10px currentColor;
+}
+
+/* Glowing border */
+.glow-border {
+  box-shadow:
+    0 0 5px var(--arcade-purple),
+    0 0 10px var(--arcade-purple),
+    inset 0 0 5px rgba(147, 51, 234, 0.1);
+}
+
+.glow-border-cyan {
+  box-shadow:
+    0 0 5px var(--arcade-cyan),
+    0 0 10px var(--arcade-cyan),
+    inset 0 0 5px rgba(34, 211, 238, 0.1);
+}
+
+.glow-border-pink {
+  box-shadow:
+    0 0 5px var(--arcade-pink),
+    0 0 10px var(--arcade-pink),
+    inset 0 0 5px rgba(236, 72, 153, 0.1);
+}
+
+/* Arcade button style */
+.arcade-btn {
+  @apply relative px-6 py-3 font-bold uppercase tracking-wider;
+  @apply border-2 border-arcade-purple rounded-lg;
+  @apply bg-gradient-to-b from-arcade-purple/20 to-arcade-purple/5;
+  @apply transition-all duration-200;
+  @apply hover:border-arcade-pink hover:shadow-neon-pink;
+  @apply active:scale-95;
+}
+
+.arcade-btn:hover {
+  box-shadow:
+    0 0 20px rgba(236, 72, 153, 0.5),
+    inset 0 0 20px rgba(236, 72, 153, 0.1);
+}
+
+.arcade-btn-primary {
+  @apply bg-gradient-to-b from-arcade-purple to-arcade-purple/70;
+  @apply border-arcade-pink;
+  @apply text-white;
+}
+
+/* VS animation */
+@keyframes vs-pulse {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 10px var(--arcade-red));
+  }
+  50% {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 30px var(--arcade-red));
+  }
+}
+
+.vs-text {
+  animation: vs-pulse 1s ease-in-out infinite;
+}
+
+/* Response card hover */
+.response-card {
+  @apply relative overflow-hidden;
+  transition: all 0.3s ease;
+}
+
+.response-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.05),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.response-card:hover::before {
+  left: 100%;
+}
+
+/* Typing cursor */
+.typing-cursor::after {
+  content: '▋';
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Progress bar animation */
+.progress-bar {
+  background: linear-gradient(
+    90deg,
+    var(--arcade-purple),
+    var(--arcade-pink),
+    var(--arcade-cyan),
+    var(--arcade-purple)
+  );
+  background-size: 300% 100%;
+  animation: progress-gradient 2s linear infinite;
+}
+
+@keyframes progress-gradient {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 300% 0%; }
+}
+
+/* Leaderboard row hover */
+.leaderboard-row {
+  @apply transition-all duration-200;
+}
+
+.leaderboard-row:hover {
+  @apply bg-arcade-purple/10;
+  transform: translateX(5px);
+}
+
+/* Achievement unlock animation */
+@keyframes achievement-unlock {
+  0% {
+    transform: scale(0) rotate(-180deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(10deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.achievement-unlocked {
+  animation: achievement-unlock 0.6s ease-out forwards;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--arcade-purple);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--arcade-pink);
+}
+
+/* Battle result flash */
+@keyframes winner-flash {
+  0%, 100% { box-shadow: 0 0 20px var(--arcade-green); }
+  50% { box-shadow: 0 0 40px var(--arcade-green), 0 0 60px var(--arcade-green); }
+}
+
+.winner-card {
+  animation: winner-flash 0.5s ease-in-out 3;
+  border-color: var(--arcade-green) !important;
+}
+
+/* XP gain animation */
+@keyframes xp-float {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+}
+
+.xp-float {
+  animation: xp-float 1.5s ease-out forwards;
+}
