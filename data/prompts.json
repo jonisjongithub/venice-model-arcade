@@ -121,6 +121,128 @@
       "difficulty": "medium"
     }
   ],
+  "imagePrompts": [
+    {
+      "id": "img-1",
+      "text": "A serene Japanese garden with cherry blossoms falling into a koi pond at sunset",
+      "category": "nature",
+      "difficulty": "medium"
+    },
+    {
+      "id": "img-2",
+      "text": "A cyberpunk cityscape at night with neon signs and flying cars",
+      "category": "scifi",
+      "difficulty": "medium"
+    },
+    {
+      "id": "img-3",
+      "text": "A cozy cabin in the mountains during a snowstorm, warm light glowing from windows",
+      "category": "nature",
+      "difficulty": "easy"
+    },
+    {
+      "id": "img-4",
+      "text": "A steampunk robot bartender serving drinks in a Victorian-era saloon",
+      "category": "fantasy",
+      "difficulty": "hard"
+    },
+    {
+      "id": "img-5",
+      "text": "An astronaut floating in space with Earth reflected in their helmet visor",
+      "category": "scifi",
+      "difficulty": "medium"
+    },
+    {
+      "id": "img-6",
+      "text": "A magical forest with bioluminescent mushrooms and fireflies at twilight",
+      "category": "fantasy",
+      "difficulty": "medium"
+    },
+    {
+      "id": "img-7",
+      "text": "A cute corgi wearing a tiny crown sitting on a velvet throne",
+      "category": "cute",
+      "difficulty": "easy"
+    },
+    {
+      "id": "img-8",
+      "text": "A dramatic ocean wave about to crash, with a lighthouse in the background",
+      "category": "nature",
+      "difficulty": "medium"
+    },
+    {
+      "id": "img-9",
+      "text": "An ancient library with towering bookshelves and floating magical books",
+      "category": "fantasy",
+      "difficulty": "hard"
+    },
+    {
+      "id": "img-10",
+      "text": "A futuristic sports car parked on a cliff overlooking a neon city",
+      "category": "scifi",
+      "difficulty": "medium"
+    },
+    {
+      "id": "img-11",
+      "text": "A dragon perched on a castle tower under a full moon",
+      "category": "fantasy",
+      "difficulty": "medium"
+    },
+    {
+      "id": "img-12",
+      "text": "A street food market in Tokyo with colorful lanterns and steam rising from stalls",
+      "category": "urban",
+      "difficulty": "medium"
+    },
+    {
+      "id": "img-13",
+      "text": "A cat astronaut exploring an alien planet with purple vegetation",
+      "category": "cute",
+      "difficulty": "medium"
+    },
+    {
+      "id": "img-14",
+      "text": "A majestic waterfall in a tropical paradise with rainbow mist",
+      "category": "nature",
+      "difficulty": "easy"
+    },
+    {
+      "id": "img-15",
+      "text": "A retro 80s arcade with glowing game cabinets and neon lights",
+      "category": "retro",
+      "difficulty": "medium"
+    },
+    {
+      "id": "img-16",
+      "text": "A samurai warrior standing in a field of tall grass at golden hour",
+      "category": "portrait",
+      "difficulty": "medium"
+    },
+    {
+      "id": "img-17",
+      "text": "An underwater city with glass domes and bioluminescent sea creatures",
+      "category": "scifi",
+      "difficulty": "hard"
+    },
+    {
+      "id": "img-18",
+      "text": "A cozy coffee shop interior with plants, books, and rain on the windows",
+      "category": "interior",
+      "difficulty": "easy"
+    },
+    {
+      "id": "img-19",
+      "text": "A phoenix rising from flames against a starry night sky",
+      "category": "fantasy",
+      "difficulty": "medium"
+    },
+    {
+      "id": "img-20",
+      "text": "A vintage Porsche 911 driving through an autumn forest road",
+      "category": "automotive",
+      "difficulty": "medium"
+    }
+  ],
   "dailyChallenges": [
     {
       "id": "daily-1",
@@ -140,6 +262,29 @@
       "id": "daily-3",
       "text": "Explain the Monty Hall problem and prove why switching is the better choice.",
       "category": "logic",
+      "difficulty": "hard",
+      "bonusXP": 50
+    }
+  ],
+  "imageDailyChallenges": [
+    {
+      "id": "img-daily-1",
+      "text": "Create the most photorealistic image of a single water droplet on a leaf",
+      "category": "photorealism",
+      "difficulty": "hard",
+      "bonusXP": 50
+    },
+    {
+      "id": "img-daily-2",
+      "text": "Generate a movie poster for an AI-directed film called 'The Last Algorithm'",
+      "category": "design",
+      "difficulty": "medium",
+      "bonusXP": 40
+    },
+    {
+      "id": "img-daily-3",
+      "text": "Create an impossible architecture scene - a building that defies physics",
+      "category": "surreal",
       "difficulty": "hard",
       "bonusXP": 50
     }

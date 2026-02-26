@@ -77,14 +77,19 @@ function BattleContent() {
     refreshSuggestedPrompts();
   }, []);
   
-  // Re-select models when content type changes
+  // Re-select models and refresh prompts when content type changes
   useEffect(() => {
     selectRandomModels();
+    refreshSuggestedPrompts();
+    setPrompt(''); // Clear prompt when switching modes
   }, [contentType]);
 
   function refreshSuggestedPrompts() {
-    const shuffled = [...promptsData.prompts].sort(() => Math.random() - 0.5);
-    setSuggestedPrompts(shuffled.slice(0, 3).map(p => p.text));
+    const promptSource = contentType === 'image' 
+      ? (promptsData as any).imagePrompts || promptsData.prompts
+      : promptsData.prompts;
+    const shuffled = [...promptSource].sort(() => Math.random() - 0.5);
+    setSuggestedPrompts(shuffled.slice(0, 3).map((p: any) => p.text));
   }
 
   function selectRandomModels() {
@@ -126,10 +131,16 @@ function BattleContent() {
 
   function getRandomPrompt() {
     if (mode === 'daily') {
-      const daily = promptsData.dailyChallenges[Math.floor(Math.random() * promptsData.dailyChallenges.length)];
+      const dailySource = contentType === 'image'
+        ? (promptsData as any).imageDailyChallenges || promptsData.dailyChallenges
+        : promptsData.dailyChallenges;
+      const daily = dailySource[Math.floor(Math.random() * dailySource.length)];
       return daily.text;
     }
-    const random = promptsData.prompts[Math.floor(Math.random() * promptsData.prompts.length)];
+    const promptSource = contentType === 'image'
+      ? (promptsData as any).imagePrompts || promptsData.prompts
+      : promptsData.prompts;
+    const random = promptSource[Math.floor(Math.random() * promptSource.length)];
     return random.text;
   }
 
@@ -660,7 +671,9 @@ function BattleContent() {
             <textarea
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
-              placeholder="Enter a prompt for the models to compete on..."
+              placeholder={contentType === 'image' 
+                ? "Describe an image for the models to generate..." 
+                : "Enter a prompt for the models to compete on..."}
               className="w-full h-32 bg-arcade-dark/50 border-2 border-arcade-purple/30 rounded-xl p-4 text-white placeholder-gray-500 focus:border-arcade-purple focus:outline-none transition-colors resize-none"
             />
           </div>
