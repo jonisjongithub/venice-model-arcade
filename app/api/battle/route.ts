@@ -33,7 +33,8 @@ export async function POST(request: NextRequest) {
     };
 
     // Claude models with thinking capability need explicit thinking config
-    if (model.includes('claude') && (model.includes('sonnet-4') || model.includes('opus-4'))) {
+    const modelLower = model.toLowerCase();
+    if (modelLower.includes('claude') && (modelLower.includes('sonnet') || modelLower.includes('opus'))) {
       requestBody.venice_parameters = {
         enable_thinking: false  // Disable thinking for faster responses in battles
       };

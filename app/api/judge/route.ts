@@ -64,7 +64,8 @@ Evaluate both responses and declare a winner. Respond with JSON only.`;
     };
 
     // Claude models with thinking capability need explicit thinking config
-    if (judgeModel.includes('claude') && (judgeModel.includes('sonnet-4') || judgeModel.includes('opus-4'))) {
+    const modelLower = judgeModel.toLowerCase();
+    if (modelLower.includes('claude') && (modelLower.includes('sonnet') || modelLower.includes('opus'))) {
       requestBody.venice_parameters = {
         enable_thinking: false
       };
