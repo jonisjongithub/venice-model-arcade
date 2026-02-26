@@ -4,7 +4,7 @@ import { useEffect, useState, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { ArrowLeft, Shuffle, Play, Trophy, Zap, Plus, X, Users, Swords } from 'lucide-react';
+import { ArrowLeft, Shuffle, Play, Trophy, Zap, Plus, X, Users, Swords, Scale, Bot } from 'lucide-react';
 import { useArcadeStore, Model } from '@/lib/store';
 import { calculateElo, formatEloChange, getEloTier } from '@/lib/elo';
 import promptsData from '@/data/prompts.json';
@@ -44,6 +44,20 @@ function BattleContent() {
   const [eloResult, setEloResult] = useState<{ changeA: number; changeB: number } | null>(null);
   const [xpGained, setXpGained] = useState(0);
   const [suggestedPrompts, setSuggestedPrompts] = useState<string[]>([]);
+  
+  // Judge mode
+  const [useJudge, setUseJudge] = useState(false);
+  const [judgeModel, setJudgeModel] = useState<Model | null>(null);
+  const [judgeVerdict, setJudgeVerdict] = useState<{
+    winner: 'A' | 'B';
+    reasoning: string;
+    scores?: {
+      A: { accuracy: number; helpfulness: number; clarity: number; completeness: number };
+      B: { accuracy: number; helpfulness: number; clarity: number; completeness: number };
+    } | null;
+    judgeModel: string;
+  } | null>(null);
+  const [judging, setJudging] = useState(false);
   
   const abortControllerRef = useRef<AbortController | null>(null);
 
@@ -120,6 +134,7 @@ function BattleContent() {
 
   async function start1v1Battle() {
     setPhase('vs-screen');
+    setJudgeVerdict(null);
     await new Promise(resolve => setTimeout(resolve, 2000));
     
     setPhase('battle');
@@ -130,10 +145,57 @@ function BattleContent() {
     
     abortControllerRef.current = new AbortController();
     
+    // Store responses for judge
+    let finalResponseA = '';
+    let finalResponseB = '';
+    
     await Promise.all([
-      streamResponse(modelA!.id, (fn) => setResponseA(fn), setLoadingA),
-      streamResponse(modelB!.id, (fn) => setResponseB(fn), setLoadingB),
+      streamResponse(modelA!.id, (fn) => {
+        setResponseA(prev => {
+          const newVal = fn(prev);
+          finalResponseA = newVal;
+          return newVal;
+        });
+      }, setLoadingA),
+      streamResponse(modelB!.id, (fn) => {
+        setResponseB(prev => {
+          const newVal = fn(prev);
+          finalResponseB = newVal;
+          return newVal;
+        });
+      }, setLoadingB),
     ]);
+    
+    // If judge mode is enabled, get AI verdict
+    if (useJudge && judgeModel) {
+      setJudging(true);
+      try {
+        const judgeResponse = await fetch('/api/judge', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            judgeModel: judgeModel.id,
+            prompt,
+            responseA: finalResponseA,
+            responseB: finalResponseB,
+            modelA: modelA!.name,
+            modelB: modelB!.name,
+          }),
+        });
+        
+        if (judgeResponse.ok) {
+          const verdict = await judgeResponse.json();
+          setJudgeVerdict(verdict);
+          // Auto-vote based on judge's decision
+          handleVote(verdict.winner);
+          return;
+        }
+      } catch (error) {
+        console.error('Judge error:', error);
+      } finally {
+        setJudging(false);
+      }
+    }
     
     setPhase('voting');
   }
@@ -458,15 +520,64 @@ function BattleContent() {
             />
           </div>
 
+          {/* Judge Mode Toggle (1v1 only) */}
+          {battleMode === '1v1' && (
+            <div className="mb-6 p-4 rounded-xl border border-arcade-purple/30 bg-arcade-dark/30">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Scale className="w-5 h-5 text-arcade-cyan" />
+                  <span className="text-arcade-purple font-medium">AI Judge Mode</span>
+                </div>
+                <button
+                  onClick={() => setUseJudge(!useJudge)}
+                  className={`relative w-14 h-7 rounded-full transition-colors ${
+                    useJudge ? 'bg-arcade-green' : 'bg-gray-700'
+                  }`}
+                >
+                  <span
+                    className={`absolute top-1 w-5 h-5 rounded-full bg-white transition-transform ${
+                      useJudge ? 'translate-x-8' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+              </div>
+              {useJudge && (
+                <div className="mt-3">
+                  <div className="text-sm text-gray-400 mb-2">Select a judge model to evaluate responses:</div>
+                  <div className="flex flex-wrap gap-2">
+                    {models.slice(0, 8).map(model => (
+                      <button
+                        key={model.id}
+                        onClick={() => setJudgeModel(model)}
+                        className={`px-3 py-2 text-sm rounded-lg border transition-colors flex items-center gap-2 ${
+                          judgeModel?.id === model.id
+                            ? 'border-arcade-green bg-arcade-green/20 text-arcade-green'
+                            : 'border-arcade-purple/30 hover:border-arcade-purple text-gray-300'
+                        }`}
+                      >
+                        <span>{model.icon}</span>
+                        <span>{model.shortName}</span>
+                      </button>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2">
+                    <Bot className="w-3 h-3 inline mr-1" />
+                    The judge will read both responses and declare a winner with reasoning.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Start Button */}
           <div className="text-center">
             <button
               onClick={startBattle}
-              disabled={!canStart}
+              disabled={!canStart || (useJudge && !judgeModel)}
               className="arcade-btn arcade-btn-primary text-xl px-12 py-4 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 mx-auto"
             >
               <Play className="w-6 h-6" />
-              START {battleMode === 'multi' ? 'MULTI ' : ''}BATTLE
+              START {battleMode === 'multi' ? 'MULTI ' : ''}BATTLE {useJudge && '(Judged)'}
             </button>
           </div>
         </motion.div>
@@ -589,7 +700,15 @@ function BattleContent() {
             <ResponseCard label="A" response={responseA} loading={loadingA} model={phase === 'voting' ? modelA : null} isWinner={winner === 'A'} onVote={phase === 'voting' ? () => handleVote('A') : undefined} />
             <ResponseCard label="B" response={responseB} loading={loadingB} model={phase === 'voting' ? modelB : null} isWinner={winner === 'B'} onVote={phase === 'voting' ? () => handleVote('B') : undefined} />
           </div>
-          {phase === 'voting' && <div className="text-center text-arcade-cyan animate-pulse">⬆️ Click on the response you think is better! ⬆️</div>}
+          {phase === 'voting' && !useJudge && <div className="text-center text-arcade-cyan animate-pulse">⬆️ Click on the response you think is better! ⬆️</div>}
+          {judging && (
+            <div className="text-center">
+              <div className="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-arcade-cyan/20 border border-arcade-cyan">
+                <Scale className="w-5 h-5 text-arcade-cyan animate-pulse" />
+                <span className="text-arcade-cyan">Judge is evaluating responses...</span>
+              </div>
+            </div>
+          )}
         </motion.div>
       )}
 
@@ -625,7 +744,50 @@ function BattleContent() {
             <h2 className="text-3xl font-arcade text-arcade-yellow mb-2">WINNER</h2>
             <div className="text-6xl mb-2">{winner === 'A' ? modelA.icon : modelB.icon}</div>
             <div className="text-2xl font-bold text-white">{winner === 'A' ? modelA.name : modelB.name}</div>
+            {judgeVerdict && (
+              <div className="mt-2 text-arcade-cyan text-sm flex items-center justify-center gap-2">
+                <Scale className="w-4 h-4" />
+                Judged by {models.find(m => m.id === judgeVerdict.judgeModel)?.shortName || judgeVerdict.judgeModel}
+              </div>
+            )}
           </div>
+          
+          {/* Judge Verdict Card */}
+          {judgeVerdict && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-8 p-6 rounded-xl border border-arcade-cyan/30 bg-arcade-dark/50 text-left max-w-2xl mx-auto"
+            >
+              <div className="flex items-center gap-2 mb-3">
+                <Scale className="w-5 h-5 text-arcade-cyan" />
+                <span className="font-arcade text-arcade-cyan">JUDGE&apos;S VERDICT</span>
+              </div>
+              <p className="text-gray-300 mb-4">{judgeVerdict.reasoning}</p>
+              {judgeVerdict.scores && (
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="p-3 rounded-lg bg-arcade-dark/50">
+                    <div className="font-medium text-arcade-purple mb-2">{modelA.shortName}</div>
+                    <div className="space-y-1 text-gray-400">
+                      <div>Accuracy: {judgeVerdict.scores.A.accuracy}/10</div>
+                      <div>Helpfulness: {judgeVerdict.scores.A.helpfulness}/10</div>
+                      <div>Clarity: {judgeVerdict.scores.A.clarity}/10</div>
+                      <div>Completeness: {judgeVerdict.scores.A.completeness}/10</div>
+                    </div>
+                  </div>
+                  <div className="p-3 rounded-lg bg-arcade-dark/50">
+                    <div className="font-medium text-arcade-purple mb-2">{modelB.shortName}</div>
+                    <div className="space-y-1 text-gray-400">
+                      <div>Accuracy: {judgeVerdict.scores.B.accuracy}/10</div>
+                      <div>Helpfulness: {judgeVerdict.scores.B.helpfulness}/10</div>
+                      <div>Clarity: {judgeVerdict.scores.B.clarity}/10</div>
+                      <div>Completeness: {judgeVerdict.scores.B.completeness}/10</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          )}
           <div className="flex justify-center gap-12 mb-8">
             <EloChangeDisplay model={modelA} change={eloResult.changeA} isWinner={winner === 'A'} />
             <EloChangeDisplay model={modelB} change={eloResult.changeB} isWinner={winner === 'B'} />
