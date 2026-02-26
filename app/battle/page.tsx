@@ -4,7 +4,7 @@ import { useEffect, useState, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
-import { ArrowLeft, Shuffle, Play, Trophy, Zap, Plus, X, Users, Swords, Scale, Bot } from 'lucide-react';
+import { ArrowLeft, Shuffle, Play, Trophy, Zap, Plus, X, Users, Swords, Scale, Bot, Type, ImageIcon } from 'lucide-react';
 import { useArcadeStore, Model } from '@/lib/store';
 import { calculateElo, formatEloChange, getEloTier } from '@/lib/elo';
 import promptsData from '@/data/prompts.json';
@@ -12,16 +12,25 @@ import { nanoid } from 'nanoid';
 
 type BattlePhase = 'setup' | 'vs-screen' | 'battle' | 'voting' | 'results';
 type BattleMode = '1v1' | 'multi';
+type ContentType = 'text' | 'image';
 
 function BattleContent() {
   const searchParams = useSearchParams();
   const mode = (searchParams.get('mode') || 'quick') as 'quick' | 'ranked' | 'daily';
   
-  const { models, updateModelElo, addBattle, addXP, incrementStreak, unlockAchievement, totalBattles } = useArcadeStore();
+  const { models, imageModels, updateModelElo, addBattle, addXP, incrementStreak, unlockAchievement, totalBattles } = useArcadeStore();
   
   const [phase, setPhase] = useState<BattlePhase>('setup');
   const [battleMode, setBattleMode] = useState<BattleMode>('1v1');
+  const [contentType, setContentType] = useState<ContentType>('text');
   const [prompt, setPrompt] = useState('');
+  
+  // Image mode state
+  const [imageA, setImageA] = useState<string>('');
+  const [imageB, setImageB] = useState<string>('');
+  
+  // Get the right model list based on content type
+  const availableModels = contentType === 'text' ? models : imageModels;
   
   // 1v1 mode
   const [modelA, setModelA] = useState<Model | null>(null);
@@ -66,6 +75,16 @@ function BattleContent() {
     selectRandomModels();
     refreshSuggestedPrompts();
   }, []);
+  
+  // Re-select models and reset settings when content type changes
+  useEffect(() => {
+    selectRandomModels();
+    // Reset to 1v1 for image mode (multi not supported)
+    if (contentType === 'image') {
+      setBattleMode('1v1');
+      setUseJudge(false); // Judge mode not supported for images
+    }
+  }, [contentType]);
 
   function refreshSuggestedPrompts() {
     const shuffled = [...promptsData.prompts].sort(() => Math.random() - 0.5);
@@ -73,7 +92,7 @@ function BattleContent() {
   }
 
   function selectRandomModels() {
-    const shuffled = [...models].sort(() => Math.random() - 0.5);
+    const shuffled = [...availableModels].sort(() => Math.random() - 0.5);
     setModelA(shuffled[0]);
     setModelB(shuffled[1]);
     // For multi mode, select 3 random models
@@ -137,6 +156,8 @@ function BattleContent() {
   async function start1v1Battle() {
     setPhase('vs-screen');
     setJudgeVerdict(null);
+    setImageA('');
+    setImageB('');
     await new Promise(resolve => setTimeout(resolve, 2000));
     
     setPhase('battle');
@@ -147,7 +168,39 @@ function BattleContent() {
     
     abortControllerRef.current = new AbortController();
     
-    // Store responses for judge
+    if (contentType === 'image') {
+      // Image generation mode
+      try {
+        const [resultA, resultB] = await Promise.all([
+          fetch('/api/image-battle', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ model: modelA!.id, prompt }),
+          }).then(r => r.json()),
+          fetch('/api/image-battle', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ model: modelB!.id, prompt }),
+          }).then(r => r.json()),
+        ]);
+        
+        if (resultA.imageUrl) setImageA(resultA.imageUrl);
+        else setResponseA(`Error: ${resultA.error || 'Failed to generate image'}`);
+        
+        if (resultB.imageUrl) setImageB(resultB.imageUrl);
+        else setResponseB(`Error: ${resultB.error || 'Failed to generate image'}`);
+      } catch (error) {
+        console.error('Image generation error:', error);
+      } finally {
+        setLoadingA(false);
+        setLoadingB(false);
+      }
+      
+      setPhase('voting');
+      return;
+    }
+    
+    // Text generation mode (existing logic)
     let finalResponseA = '';
     let finalResponseB = '';
     
@@ -395,23 +448,46 @@ function BattleContent() {
           animate={{ opacity: 1 }}
           className="max-w-5xl mx-auto"
         >
-          {/* Battle Mode Toggle */}
-          <div className="flex justify-center gap-4 mb-8">
+          {/* Content Type Toggle */}
+          <div className="flex justify-center gap-4 mb-4">
             <button
-              onClick={() => setBattleMode('1v1')}
-              className={`arcade-btn flex items-center gap-2 ${battleMode === '1v1' ? 'arcade-btn-primary' : ''}`}
+              onClick={() => setContentType('text')}
+              className={`arcade-btn flex items-center gap-2 ${contentType === 'text' ? 'arcade-btn-primary' : ''}`}
             >
-              <Swords className="w-4 h-4" />
-              1v1 Battle
+              <Type className="w-4 h-4" />
+              Text
             </button>
             <button
-              onClick={() => setBattleMode('multi')}
-              className={`arcade-btn flex items-center gap-2 ${battleMode === 'multi' ? 'arcade-btn-primary' : ''}`}
+              onClick={() => setContentType('image')}
+              className={`arcade-btn flex items-center gap-2 ${contentType === 'image' ? 'arcade-btn-primary' : ''}`}
             >
-              <Users className="w-4 h-4" />
-              Multi Battle (3-5)
+              <ImageIcon className="w-4 h-4" />
+              Image
             </button>
           </div>
+
+          {/* Battle Mode Toggle (text only) */}
+          {contentType === 'text' && (
+            <div className="flex justify-center gap-4 mb-8">
+              <button
+                onClick={() => setBattleMode('1v1')}
+                className={`arcade-btn flex items-center gap-2 ${battleMode === '1v1' ? 'arcade-btn-primary' : ''}`}
+              >
+                <Swords className="w-4 h-4" />
+                1v1 Battle
+              </button>
+              <button
+                onClick={() => setBattleMode('multi')}
+                className={`arcade-btn flex items-center gap-2 ${battleMode === 'multi' ? 'arcade-btn-primary' : ''}`}
+              >
+                <Users className="w-4 h-4" />
+                Multi Battle (3-5)
+              </button>
+            </div>
+          )}
+          
+          {/* Image mode is always 1v1 */}
+          {contentType === 'image' && <div className="mb-8" />}
 
           {/* 1v1 Model Selection */}
           {battleMode === '1v1' && (
@@ -625,7 +701,8 @@ function BattleContent() {
                 </button>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                {models.map(model => {
+                {/* Use text models for judge, appropriate models for contestants */}
+                {(showModelPicker === 'judge' ? models : availableModels).map(model => {
                   const isSelected = showModelPicker === 'multi' 
                     ? selectedModels.find(m => m.id === model.id)
                     : showModelPicker === 'judge'
@@ -715,8 +792,8 @@ function BattleContent() {
             <div className="text-white">{prompt}</div>
           </div>
           <div className="grid md:grid-cols-2 gap-6 mb-8">
-            <ResponseCard label="A" response={responseA} loading={loadingA} model={phase === 'voting' ? modelA : null} isWinner={winner === 'A'} onVote={phase === 'voting' ? () => handleVote('A') : undefined} />
-            <ResponseCard label="B" response={responseB} loading={loadingB} model={phase === 'voting' ? modelB : null} isWinner={winner === 'B'} onVote={phase === 'voting' ? () => handleVote('B') : undefined} />
+            <ResponseCard label="A" response={responseA} loading={loadingA} model={phase === 'voting' ? modelA : null} isWinner={winner === 'A'} onVote={phase === 'voting' ? () => handleVote('A') : undefined} imageUrl={contentType === 'image' ? imageA : undefined} />
+            <ResponseCard label="B" response={responseB} loading={loadingB} model={phase === 'voting' ? modelB : null} isWinner={winner === 'B'} onVote={phase === 'voting' ? () => handleVote('B') : undefined} imageUrl={contentType === 'image' ? imageB : undefined} />
           </div>
           {phase === 'voting' && !useJudge && <div className="text-center text-arcade-cyan animate-pulse">⬆️ Click on the response you think is better! ⬆️</div>}
           {judging && (
@@ -893,7 +970,7 @@ function ModelCard({ model, label, onClick, selectable }: { model: Model | null;
   );
 }
 
-function ResponseCard({ label, response, loading, model, isWinner, onVote }: { label: string; response: string; loading: boolean; model: Model | null; isWinner: boolean; onVote?: () => void }) {
+function ResponseCard({ label, response, loading, model, isWinner, onVote, imageUrl }: { label: string; response: string; loading: boolean; model: Model | null; isWinner: boolean; onVote?: () => void; imageUrl?: string }) {
   const colorClass = label === 'A' ? 'border-arcade-cyan' : 'border-arcade-pink';
   const bgClass = label === 'A' ? 'bg-arcade-cyan/10' : 'bg-arcade-pink/10';
   return (
@@ -903,8 +980,16 @@ function ResponseCard({ label, response, loading, model, isWinner, onVote }: { l
         {model && <span className="flex items-center gap-2"><span>{model.icon}</span><span className="text-sm">{model.shortName}</span></span>}
         {!model && <span className="text-gray-500 text-sm">??? (Hidden)</span>}
       </div>
-      <div className="p-4 h-80 overflow-y-auto bg-arcade-dark/30">
-        {loading ? <div className="text-gray-400 typing-cursor">{response || 'Generating...'}</div> : <div className="text-white whitespace-pre-wrap">{response}</div>}
+      <div className={`p-4 ${imageUrl ? 'h-auto' : 'h-80'} overflow-y-auto bg-arcade-dark/30`}>
+        {loading ? (
+          <div className="text-gray-400 typing-cursor flex items-center justify-center h-64">
+            {imageUrl ? 'Generating image...' : (response || 'Generating...')}
+          </div>
+        ) : imageUrl ? (
+          <img src={imageUrl} alt={`Response ${label}`} className="w-full h-auto rounded-lg" />
+        ) : (
+          <div className="text-white whitespace-pre-wrap">{response}</div>
+        )}
       </div>
       {onVote && <button onClick={onVote} className={`w-full p-4 ${bgClass} hover:bg-opacity-50 transition-colors font-bold uppercase tracking-wider`}>🗳️ Vote for {label}</button>}
       {isWinner && <div className="p-3 bg-arcade-green/20 text-arcade-green text-center font-bold">🏆 WINNER</div>}

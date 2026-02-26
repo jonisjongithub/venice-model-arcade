@@ -41,7 +41,8 @@ export interface Achievement {
 interface ArcadeState {
   // Models & ELO
   models: Model[];
-  updateModelElo: (modelId: string, newElo: number, won: boolean) => void;
+  imageModels: Model[];
+  updateModelElo: (modelId: string, newElo: number, won: boolean, isImage?: boolean) => void;
   
   // Battles
   battles: Battle[];
@@ -83,19 +84,23 @@ export const useArcadeStore = create<ArcadeState>()(
     (set, get) => ({
       // Models
       models: modelsData.models as Model[],
-      updateModelElo: (modelId, newElo, won) =>
-        set((state) => ({
-          models: state.models.map((m) =>
-            m.id === modelId
-              ? {
-                  ...m,
-                  elo: newElo,
-                  wins: won ? m.wins + 1 : m.wins,
-                  losses: won ? m.losses : m.losses + 1,
-                }
-              : m
-          ),
-        })),
+      imageModels: (modelsData as { models: Model[]; imageModels: Model[] }).imageModels || [],
+      updateModelElo: (modelId, newElo, won, isImage = false) =>
+        set((state) => {
+          const key = isImage ? 'imageModels' : 'models';
+          return {
+            [key]: state[key].map((m) =>
+              m.id === modelId
+                ? {
+                    ...m,
+                    elo: newElo,
+                    wins: won ? m.wins + 1 : m.wins,
+                    losses: won ? m.losses : m.losses + 1,
+                  }
+                : m
+            ),
+          };
+        }),
 
       // Battles
       battles: [],

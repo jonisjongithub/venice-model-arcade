@@ -481,5 +481,124 @@
       "description": "Venice for roleplay",
       "strengths": ["Roleplay", "Creative", "Characters"]
     }
+  ],
+  "imageModels": [
+    {
+      "id": "flux-2-pro",
+      "name": "Flux 2 Pro",
+      "shortName": "Flux 2 Pro",
+      "icon": "🎨",
+      "color": "#ec4899",
+      "type": "image",
+      "elo": 1600,
+      "wins": 0,
+      "losses": 0,
+      "description": "Best quality Flux model",
+      "strengths": ["Quality", "Detail", "Photorealism"]
+    },
+    {
+      "id": "flux-2-max",
+      "name": "Flux 2 Max",
+      "shortName": "Flux 2 Max",
+      "icon": "🖼️",
+      "color": "#db2777",
+      "type": "image",
+      "elo": 1580,
+      "wins": 0,
+      "losses": 0,
+      "description": "High quality Flux",
+      "strengths": ["Quality", "Speed", "Versatile"]
+    },
+    {
+      "id": "flux-1.1-pro-ultra",
+      "name": "Flux 1.1 Pro Ultra",
+      "shortName": "Flux Ultra",
+      "icon": "✨",
+      "color": "#be185d",
+      "type": "image",
+      "elo": 1560,
+      "wins": 0,
+      "losses": 0,
+      "description": "Ultra quality Flux",
+      "strengths": ["High-res", "Detail", "Professional"]
+    },
+    {
+      "id": "flux-1.1-pro",
+      "name": "Flux 1.1 Pro",
+      "shortName": "Flux 1.1 Pro",
+      "icon": "🌟",
+      "color": "#9d174d",
+      "type": "image",
+      "elo": 1540,
+      "wins": 0,
+      "losses": 0,
+      "description": "Professional Flux",
+      "strengths": ["Balanced", "Fast", "Quality"]
+    },
+    {
+      "id": "fluently-xl",
+      "name": "Fluently XL",
+      "shortName": "Fluently XL",
+      "icon": "💫",
+      "color": "#a855f7",
+      "type": "image",
+      "elo": 1520,
+      "wins": 0,
+      "losses": 0,
+      "description": "Fluent image generation",
+      "strengths": ["Creative", "Artistic", "Fast"]
+    },
+    {
+      "id": "stable-diffusion-3.5-large",
+      "name": "Stable Diffusion 3.5 Large",
+      "shortName": "SD 3.5 Large",
+      "icon": "🌊",
+      "color": "#7c3aed",
+      "type": "image",
+      "elo": 1550,
+      "wins": 0,
+      "losses": 0,
+      "description": "Stability AI's best",
+      "strengths": ["Versatile", "Detailed", "Reliable"]
+    },
+    {
+      "id": "stable-diffusion-3.5-medium",
+      "name": "Stable Diffusion 3.5 Medium",
+      "shortName": "SD 3.5 Med",
+      "icon": "🌊",
+      "color": "#6d28d9",
+      "type": "image",
+      "elo": 1500,
+      "wins": 0,
+      "losses": 0,
+      "description": "Balanced SD model",
+      "strengths": ["Speed", "Quality", "Efficient"]
+    },
+    {
+      "id": "recraft-v3",
+      "name": "Recraft V3",
+      "shortName": "Recraft V3",
+      "icon": "🔧",
+      "color": "#059669",
+      "type": "image",
+      "elo": 1530,
+      "wins": 0,
+      "losses": 0,
+      "description": "Design-focused generation",
+      "strengths": ["Design", "Branding", "Clean"]
+    },
+    {
+      "id": "ideogram-v2",
+      "name": "Ideogram V2",
+      "shortName": "Ideogram V2",
+      "icon": "💡",
+      "color": "#0891b2",
+      "type": "image",
+      "elo": 1540,
+      "wins": 0,
+      "losses": 0,
+      "description": "Great at text in images",
+      "strengths": ["Text rendering", "Logos", "Typography"]
+    }
   ]
 }
