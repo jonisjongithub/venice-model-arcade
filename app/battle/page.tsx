@@ -28,6 +28,7 @@ function BattleContent() {
   // Image mode state
   const [imageA, setImageA] = useState<string>('');
   const [imageB, setImageB] = useState<string>('');
+  const [multiImages, setMultiImages] = useState<Record<string, string>>({});
   
   // Get the right model list based on content type
   const availableModels = contentType === 'text' ? models : imageModels;
@@ -76,14 +77,9 @@ function BattleContent() {
     refreshSuggestedPrompts();
   }, []);
   
-  // Re-select models and reset settings when content type changes
+  // Re-select models when content type changes
   useEffect(() => {
     selectRandomModels();
-    // Reset to 1v1 for image mode (multi not supported)
-    if (contentType === 'image') {
-      setBattleMode('1v1');
-      setUseJudge(false); // Judge mode not supported for images
-    }
   }, [contentType]);
 
   function refreshSuggestedPrompts() {
@@ -170,6 +166,9 @@ function BattleContent() {
     
     if (contentType === 'image') {
       // Image generation mode
+      let finalImageA = '';
+      let finalImageB = '';
+      
       try {
         const [resultA, resultB] = await Promise.all([
           fetch('/api/image-battle', {
@@ -184,16 +183,54 @@ function BattleContent() {
           }).then(r => r.json()),
         ]);
         
-        if (resultA.imageUrl) setImageA(resultA.imageUrl);
-        else setResponseA(`Error: ${resultA.error || 'Failed to generate image'}`);
+        if (resultA.imageUrl) {
+          setImageA(resultA.imageUrl);
+          finalImageA = resultA.imageUrl;
+        } else {
+          setResponseA(`Error: ${resultA.error || 'Failed to generate image'}`);
+        }
         
-        if (resultB.imageUrl) setImageB(resultB.imageUrl);
-        else setResponseB(`Error: ${resultB.error || 'Failed to generate image'}`);
+        if (resultB.imageUrl) {
+          setImageB(resultB.imageUrl);
+          finalImageB = resultB.imageUrl;
+        } else {
+          setResponseB(`Error: ${resultB.error || 'Failed to generate image'}`);
+        }
       } catch (error) {
         console.error('Image generation error:', error);
       } finally {
         setLoadingA(false);
         setLoadingB(false);
+      }
+      
+      // If judge mode is enabled for images, get AI verdict
+      if (useJudge && judgeModel && finalImageA && finalImageB) {
+        setJudging(true);
+        try {
+          const judgeResponse = await fetch('/api/image-judge', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              judgeModel: judgeModel.id,
+              prompt,
+              imageUrlA: finalImageA,
+              imageUrlB: finalImageB,
+              modelA: modelA!.name,
+              modelB: modelB!.name,
+            }),
+          });
+          
+          if (judgeResponse.ok) {
+            const verdict = await judgeResponse.json();
+            setJudgeVerdict(verdict);
+            handleVote(verdict.winner);
+            return;
+          }
+        } catch (error) {
+          console.error('Image judge error:', error);
+        } finally {
+          setJudging(false);
+        }
       }
       
       setPhase('voting');
@@ -257,6 +294,7 @@ function BattleContent() {
 
   async function startMultiBattle() {
     setPhase('vs-screen');
+    setMultiImages({});
     await new Promise(resolve => setTimeout(resolve, 2000));
     
     setPhase('battle');
@@ -268,6 +306,40 @@ function BattleContent() {
     
     abortControllerRef.current = new AbortController();
     
+    if (contentType === 'image') {
+      // Image generation mode for multi-battle
+      try {
+        const results = await Promise.all(
+          selectedModels.map(async model => {
+            const res = await fetch('/api/image-battle', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ model: model.id, prompt }),
+            });
+            const data = await res.json();
+            setMultiLoading(prev => ({ ...prev, [model.id]: false }));
+            return { modelId: model.id, ...data };
+          })
+        );
+        
+        const imageResults: Record<string, string> = {};
+        results.forEach(r => {
+          if (r.imageUrl) {
+            imageResults[r.modelId] = r.imageUrl;
+          } else {
+            setMultiResponses(prev => ({ ...prev, [r.modelId]: `Error: ${r.error || 'Failed'}` }));
+          }
+        });
+        setMultiImages(imageResults);
+      } catch (error) {
+        console.error('Multi-image generation error:', error);
+      }
+      
+      setPhase('voting');
+      return;
+    }
+    
+    // Text generation mode
     await Promise.all(
       selectedModels.map(model =>
         streamResponse(
@@ -466,28 +538,23 @@ function BattleContent() {
             </button>
           </div>
 
-          {/* Battle Mode Toggle (text only) */}
-          {contentType === 'text' && (
-            <div className="flex justify-center gap-4 mb-8">
-              <button
-                onClick={() => setBattleMode('1v1')}
-                className={`arcade-btn flex items-center gap-2 ${battleMode === '1v1' ? 'arcade-btn-primary' : ''}`}
-              >
-                <Swords className="w-4 h-4" />
-                1v1 Battle
-              </button>
-              <button
-                onClick={() => setBattleMode('multi')}
-                className={`arcade-btn flex items-center gap-2 ${battleMode === 'multi' ? 'arcade-btn-primary' : ''}`}
-              >
-                <Users className="w-4 h-4" />
-                Multi Battle (3-5)
-              </button>
-            </div>
-          )}
-          
-          {/* Image mode is always 1v1 */}
-          {contentType === 'image' && <div className="mb-8" />}
+          {/* Battle Mode Toggle */}
+          <div className="flex justify-center gap-4 mb-8">
+            <button
+              onClick={() => setBattleMode('1v1')}
+              className={`arcade-btn flex items-center gap-2 ${battleMode === '1v1' ? 'arcade-btn-primary' : ''}`}
+            >
+              <Swords className="w-4 h-4" />
+              1v1 Battle
+            </button>
+            <button
+              onClick={() => setBattleMode('multi')}
+              className={`arcade-btn flex items-center gap-2 ${battleMode === 'multi' ? 'arcade-btn-primary' : ''}`}
+            >
+              <Users className="w-4 h-4" />
+              Multi Battle (3-5)
+            </button>
+          </div>
 
           {/* 1v1 Model Selection */}
           {battleMode === '1v1' && (
@@ -824,6 +891,7 @@ function BattleContent() {
                 isWinner={multiWinner === model.id}
                 showModel={phase === 'voting'}
                 onVote={phase === 'voting' ? () => handleMultiVote(model.id) : undefined}
+                imageUrl={contentType === 'image' ? multiImages[model.id] : undefined}
               />
             ))}
           </div>
@@ -997,15 +1065,23 @@ function ResponseCard({ label, response, loading, model, isWinner, onVote, image
   );
 }
 
-function MultiResponseCard({ model, response, loading, isWinner, showModel, onVote }: { model: Model; response: string; loading: boolean; isWinner: boolean; showModel: boolean; onVote?: () => void }) {
+function MultiResponseCard({ model, response, loading, isWinner, showModel, onVote, imageUrl }: { model: Model; response: string; loading: boolean; isWinner: boolean; showModel: boolean; onVote?: () => void; imageUrl?: string }) {
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className={`response-card rounded-xl border-2 border-arcade-purple/50 ${isWinner ? 'border-arcade-green bg-arcade-green/10' : ''} overflow-hidden`}>
       <div className="p-3 bg-arcade-purple/10 flex items-center justify-between">
         {showModel ? <span className="flex items-center gap-2"><span>{model.icon}</span><span className="text-sm font-medium">{model.shortName}</span></span> : <span className="text-gray-500 text-sm">??? (Hidden)</span>}
         <span className="text-xs text-arcade-cyan">{model.elo} ELO</span>
       </div>
-      <div className="p-3 h-64 overflow-y-auto bg-arcade-dark/30 text-sm">
-        {loading ? <div className="text-gray-400 typing-cursor">{response || 'Generating...'}</div> : <div className="text-white whitespace-pre-wrap">{response}</div>}
+      <div className={`p-3 ${imageUrl ? 'h-auto' : 'h-64'} overflow-y-auto bg-arcade-dark/30 text-sm`}>
+        {loading ? (
+          <div className="text-gray-400 typing-cursor flex items-center justify-center h-48">
+            {imageUrl ? 'Generating image...' : (response || 'Generating...')}
+          </div>
+        ) : imageUrl ? (
+          <img src={imageUrl} alt={`Response from ${model.shortName}`} className="w-full h-auto rounded-lg" />
+        ) : (
+          <div className="text-white whitespace-pre-wrap">{response}</div>
+        )}
       </div>
       {onVote && <button onClick={onVote} className="w-full p-3 bg-arcade-purple/10 hover:bg-arcade-purple/20 transition-colors font-bold text-sm">🗳️ Vote</button>}
       {isWinner && <div className="p-2 bg-arcade-green/20 text-arcade-green text-center font-bold text-sm">🏆 WINNER</div>}
