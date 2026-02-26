@@ -586,8 +586,8 @@ function BattleContent() {
             <div className="text-white">{prompt}</div>
           </div>
           <div className="grid md:grid-cols-2 gap-6 mb-8">
-            <ResponseCard label="A" response={responseA} loading={loadingA} model={phase === 'voting' || phase === 'results' ? modelA : null} isWinner={winner === 'A'} onVote={phase === 'voting' ? () => handleVote('A') : undefined} />
-            <ResponseCard label="B" response={responseB} loading={loadingB} model={phase === 'voting' || phase === 'results' ? modelB : null} isWinner={winner === 'B'} onVote={phase === 'voting' ? () => handleVote('B') : undefined} />
+            <ResponseCard label="A" response={responseA} loading={loadingA} model={phase === 'voting' ? modelA : null} isWinner={winner === 'A'} onVote={phase === 'voting' ? () => handleVote('A') : undefined} />
+            <ResponseCard label="B" response={responseB} loading={loadingB} model={phase === 'voting' ? modelB : null} isWinner={winner === 'B'} onVote={phase === 'voting' ? () => handleVote('B') : undefined} />
           </div>
           {phase === 'voting' && <div className="text-center text-arcade-cyan animate-pulse">⬆️ Click on the response you think is better! ⬆️</div>}
         </motion.div>
@@ -608,7 +608,7 @@ function BattleContent() {
                 response={multiResponses[model.id] || ''}
                 loading={multiLoading[model.id]}
                 isWinner={multiWinner === model.id}
-                showModel={phase === 'voting' || phase === 'results'}
+                showModel={phase === 'voting'}
                 onVote={phase === 'voting' ? () => handleMultiVote(model.id) : undefined}
               />
             ))}
