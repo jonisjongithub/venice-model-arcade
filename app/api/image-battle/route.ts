@@ -21,7 +21,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const response = await fetch(`${VENICE_API_BASE}/images/generations`, {
+    // Venice uses /image/generate (not OpenAI's /images/generations)
+    const response = await fetch(`${VENICE_API_BASE}/image/generate`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -30,10 +31,11 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({
         model,
         prompt,
-        n: 1,
-        response_format: 'url',
         width: 1024,
         height: 1024,
+        format: 'webp',
+        safe_mode: false,
+        hide_watermark: true,
       }),
     });
 
@@ -44,7 +46,7 @@ export async function POST(request: NextRequest) {
       let errorMessage = `Image generation failed (${response.status})`;
       try {
         const errorJson = JSON.parse(errorText);
-        errorMessage = errorJson.error?.message || errorJson.message || errorMessage;
+        errorMessage = errorJson.error || errorJson.message || errorMessage;
       } catch {
         if (errorText) errorMessage = errorText.substring(0, 200);
       }
@@ -56,14 +58,19 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await response.json();
-    const imageUrl = data.data?.[0]?.url;
-
-    if (!imageUrl) {
+    
+    // Venice returns base64 images in data.images array
+    const base64Image = data.images?.[0];
+    
+    if (!base64Image) {
       return NextResponse.json(
-        { error: 'No image URL in response', model },
+        { error: 'No image in response', model },
         { status: 500 }
       );
     }
+
+    // Return as data URL for direct use in img src
+    const imageUrl = `data:image/webp;base64,${base64Image}`;
 
     return NextResponse.json({
       imageUrl,
