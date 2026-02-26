@@ -21,21 +21,31 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Build request body - handle model-specific parameters
+    const requestBody: Record<string, unknown> = {
+      model,
+      messages: [
+        { role: 'user', content: prompt }
+      ],
+      stream: true,
+      max_tokens: 1024,
+      temperature: 0.7,
+    };
+
+    // Claude models with thinking capability need explicit thinking config
+    if (model.includes('claude') && (model.includes('sonnet-4') || model.includes('opus-4'))) {
+      requestBody.venice_parameters = {
+        enable_thinking: false  // Disable thinking for faster responses in battles
+      };
+    }
+
     const response = await fetch(`${VENICE_API_BASE}/chat/completions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
       },
-      body: JSON.stringify({
-        model,
-        messages: [
-          { role: 'user', content: prompt }
-        ],
-        stream: true,
-        max_tokens: 1024,
-        temperature: 0.7,
-      }),
+      body: JSON.stringify(requestBody),
     });
 
     if (!response.ok) {
