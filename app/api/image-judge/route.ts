@@ -40,8 +40,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Use a vision-capable model for image judging
-    const visionModel = 'qwen3-vl-235b-a22b'; // Qwen VL is vision-capable
+    // Use the specified judge model (should be vision-capable)
+    const visionModel = judgeModel;
+    
+    // Build request body with potential model-specific parameters
+    const requestBody: Record<string, unknown> = {
+      model: visionModel,
+      messages: [],
+      max_tokens: 1024,
+      temperature: 0.3,
+    };
+
+    // Claude models need thinking disabled
+    const modelLower = visionModel.toLowerCase();
+    if (modelLower.includes('claude') && (modelLower.includes('sonnet') || modelLower.includes('opus'))) {
+      requestBody.venice_parameters = {
+        enable_thinking: false
+      };
+    }
     
     const userContent = [
       {
@@ -74,21 +90,19 @@ Evaluate both images and declare a winner. Respond with JSON only.`
       }
     ];
 
+    // Complete the request body with messages
+    requestBody.messages = [
+      { role: 'system', content: IMAGE_JUDGE_SYSTEM_PROMPT },
+      { role: 'user', content: userContent }
+    ];
+
     const response = await fetch(`${VENICE_API_BASE}/chat/completions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
       },
-      body: JSON.stringify({
-        model: visionModel,
-        messages: [
-          { role: 'system', content: IMAGE_JUDGE_SYSTEM_PROMPT },
-          { role: 'user', content: userContent }
-        ],
-        max_tokens: 1024,
-        temperature: 0.3,
-      }),
+      body: JSON.stringify(requestBody),
     });
 
     if (!response.ok) {

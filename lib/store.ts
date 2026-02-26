@@ -42,6 +42,7 @@ interface ArcadeState {
   // Models & ELO
   models: Model[];
   imageModels: Model[];
+  visionModels: Model[];
   updateModelElo: (modelId: string, newElo: number, won: boolean, isImage?: boolean) => void;
   
   // Battles
@@ -84,7 +85,8 @@ export const useArcadeStore = create<ArcadeState>()(
     (set, get) => ({
       // Models
       models: modelsData.models as Model[],
-      imageModels: (modelsData as { models: Model[]; imageModels: Model[] }).imageModels || [],
+      imageModels: (modelsData as { models: Model[]; imageModels: Model[]; visionModels: Model[] }).imageModels || [],
+      visionModels: (modelsData as { models: Model[]; imageModels: Model[]; visionModels: Model[] }).visionModels || [],
       updateModelElo: (modelId, newElo, won, isImage = false) =>
         set((state) => {
           const key = isImage ? 'imageModels' : 'models';

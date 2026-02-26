@@ -18,7 +18,7 @@ function BattleContent() {
   const searchParams = useSearchParams();
   const mode = (searchParams.get('mode') || 'quick') as 'quick' | 'ranked' | 'daily';
   
-  const { models, imageModels, updateModelElo, addBattle, addXP, incrementStreak, unlockAchievement, totalBattles } = useArcadeStore();
+  const { models, imageModels, visionModels, updateModelElo, addBattle, addXP, incrementStreak, unlockAchievement, totalBattles } = useArcadeStore();
   
   const [phase, setPhase] = useState<BattlePhase>('setup');
   const [battleMode, setBattleMode] = useState<BattleMode>('1v1');
@@ -768,8 +768,11 @@ function BattleContent() {
                 </button>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-                {/* Use text models for judge, appropriate models for contestants */}
-                {(showModelPicker === 'judge' ? models : availableModels).map(model => {
+                {/* Use vision models for image judge, text models for text judge, appropriate models for contestants */}
+                {(showModelPicker === 'judge' 
+                  ? (contentType === 'image' ? visionModels : models)
+                  : availableModels
+                ).map(model => {
                   const isSelected = showModelPicker === 'multi' 
                     ? selectedModels.find(m => m.id === model.id)
                     : showModelPicker === 'judge'

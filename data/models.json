@@ -600,5 +600,85 @@
       "description": "Great at text in images",
       "strengths": ["Text rendering", "Logos", "Typography"]
     }
+  ],
+  "visionModels": [
+    {
+      "id": "claude-opus-4-6",
+      "name": "Claude Opus 4.6",
+      "shortName": "Opus 4.6",
+      "icon": "🎭",
+      "color": "#d97706",
+      "type": "vision",
+      "elo": 1600,
+      "wins": 0,
+      "losses": 0,
+      "description": "Anthropic's most capable vision model",
+      "strengths": ["Deep analysis", "Nuance", "Detail"]
+    },
+    {
+      "id": "claude-sonnet-4-6",
+      "name": "Claude Sonnet 4.6",
+      "shortName": "Sonnet 4.6",
+      "icon": "📝",
+      "color": "#ea580c",
+      "type": "vision",
+      "elo": 1550,
+      "wins": 0,
+      "losses": 0,
+      "description": "Fast Claude with vision",
+      "strengths": ["Speed", "Analysis", "Balanced"]
+    },
+    {
+      "id": "openai-gpt-52",
+      "name": "GPT-5.2",
+      "shortName": "GPT-5.2",
+      "icon": "🤖",
+      "color": "#047857",
+      "type": "vision",
+      "elo": 1570,
+      "wins": 0,
+      "losses": 0,
+      "description": "OpenAI's multimodal GPT-5",
+      "strengths": ["General", "Creativity", "Accuracy"]
+    },
+    {
+      "id": "gemini-3-1-pro-preview",
+      "name": "Gemini 3.1 Pro",
+      "shortName": "Gemini 3.1",
+      "icon": "💎",
+      "color": "#4285f4",
+      "type": "vision",
+      "elo": 1575,
+      "wins": 0,
+      "losses": 0,
+      "description": "Google's multimodal Gemini",
+      "strengths": ["Multimodal", "Reasoning", "Knowledge"]
+    },
+    {
+      "id": "qwen3-vl-235b-a22b",
+      "name": "Qwen3 VL 235B",
+      "shortName": "Qwen VL",
+      "icon": "👁️",
+      "color": "#4f46e5",
+      "type": "vision",
+      "elo": 1525,
+      "wins": 0,
+      "losses": 0,
+      "description": "Qwen vision-language model",
+      "strengths": ["Vision", "Multimodal", "Detail"]
+    },
+    {
+      "id": "grok-41-fast",
+      "name": "Grok 4.1",
+      "shortName": "Grok 4.1",
+      "icon": "🚀",
+      "color": "#ef4444",
+      "type": "vision",
+      "elo": 1540,
+      "wins": 0,
+      "losses": 0,
+      "description": "xAI's multimodal Grok",
+      "strengths": ["Speed", "Wit", "Analysis"]
+    }
   ]
 }
