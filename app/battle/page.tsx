@@ -39,7 +39,7 @@ function BattleContent() {
   const [multiWinner, setMultiWinner] = useState<string | null>(null);
   
   // Model picker
-  const [showModelPicker, setShowModelPicker] = useState<'A' | 'B' | 'multi' | null>(null);
+  const [showModelPicker, setShowModelPicker] = useState<'A' | 'B' | 'multi' | 'judge' | null>(null);
   
   const [eloResult, setEloResult] = useState<{ changeA: number; changeB: number } | null>(null);
   const [xpGained, setXpGained] = useState(0);
@@ -80,11 +80,13 @@ function BattleContent() {
     setSelectedModels(shuffled.slice(0, 3));
   }
 
-  function selectModel(slot: 'A' | 'B' | 'multi', model: Model) {
+  function selectModel(slot: 'A' | 'B' | 'multi' | 'judge', model: Model) {
     if (slot === 'A') {
       setModelA(model);
     } else if (slot === 'B') {
       setModelB(model);
+    } else if (slot === 'judge') {
+      setJudgeModel(model);
     } else if (slot === 'multi') {
       if (selectedModels.find(m => m.id === model.id)) {
         setSelectedModels(selectedModels.filter(m => m.id !== model.id));
@@ -523,7 +525,7 @@ function BattleContent() {
           {/* Judge Mode Toggle (1v1 only) */}
           {battleMode === '1v1' && (
             <div className="mb-6 p-4 rounded-xl border border-arcade-purple/30 bg-arcade-dark/30">
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Scale className="w-5 h-5 text-arcade-cyan" />
                   <span className="text-arcade-purple font-medium">AI Judge Mode</span>
@@ -542,28 +544,40 @@ function BattleContent() {
                 </button>
               </div>
               {useJudge && (
-                <div className="mt-3">
-                  <div className="text-sm text-gray-400 mb-2">Select a judge model to evaluate responses:</div>
-                  <div className="flex flex-wrap gap-2">
-                    {models.slice(0, 8).map(model => (
-                      <button
-                        key={model.id}
-                        onClick={() => setJudgeModel(model)}
-                        className={`px-3 py-2 text-sm rounded-lg border transition-colors flex items-center gap-2 ${
-                          judgeModel?.id === model.id
-                            ? 'border-arcade-green bg-arcade-green/20 text-arcade-green'
-                            : 'border-arcade-purple/30 hover:border-arcade-purple text-gray-300'
-                        }`}
-                      >
-                        <span>{model.icon}</span>
-                        <span>{model.shortName}</span>
-                      </button>
-                    ))}
+                <div className="mt-4 flex items-center gap-4">
+                  <div className="flex-1">
+                    <div className="text-xs text-gray-500 mb-2">JUDGE</div>
+                    <button
+                      onClick={() => setShowModelPicker('judge')}
+                      className={`w-full p-4 rounded-xl border-2 transition-colors text-left ${
+                        judgeModel 
+                          ? 'border-arcade-cyan/50 bg-arcade-dark/50 hover:border-arcade-cyan' 
+                          : 'border-dashed border-arcade-purple/50 bg-arcade-dark/30 hover:border-arcade-purple'
+                      }`}
+                    >
+                      {judgeModel ? (
+                        <div className="flex items-center gap-3">
+                          <span className="text-3xl">{judgeModel.icon}</span>
+                          <div>
+                            <div className="font-medium text-white">{judgeModel.shortName}</div>
+                            <div className="text-xs text-arcade-cyan">{judgeModel.elo} ELO</div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-3 text-gray-500">
+                          <Scale className="w-8 h-8" />
+                          <div>
+                            <div className="font-medium">Select Judge</div>
+                            <div className="text-xs">Click to choose</div>
+                          </div>
+                        </div>
+                      )}
+                    </button>
                   </div>
-                  <p className="text-xs text-gray-500 mt-2">
+                  <div className="text-xs text-gray-500 max-w-[200px]">
                     <Bot className="w-3 h-3 inline mr-1" />
-                    The judge will read both responses and declare a winner with reasoning.
-                  </p>
+                    The judge will evaluate both responses and declare a winner with reasoning.
+                  </div>
                 </div>
               )}
             </div>
@@ -602,7 +616,9 @@ function BattleContent() {
             >
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-arcade text-arcade-cyan">
-                  {showModelPicker === 'multi' ? 'Select Models' : `Select Model ${showModelPicker}`}
+                  {showModelPicker === 'multi' ? 'Select Models' : 
+                   showModelPicker === 'judge' ? 'Select Judge Model' : 
+                   `Select Model ${showModelPicker}`}
                 </h2>
                 <button onClick={() => setShowModelPicker(null)} className="text-gray-400 hover:text-white">
                   <X className="w-6 h-6" />
@@ -612,6 +628,8 @@ function BattleContent() {
                 {models.map(model => {
                   const isSelected = showModelPicker === 'multi' 
                     ? selectedModels.find(m => m.id === model.id)
+                    : showModelPicker === 'judge'
+                    ? judgeModel?.id === model.id
                     : (showModelPicker === 'A' ? modelA?.id : modelB?.id) === model.id;
                   return (
                     <button
