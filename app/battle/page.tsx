@@ -81,6 +81,9 @@ function BattleContent() {
   // Judge mode
   const [useJudge, setUseJudge] = useState(false);
   const [judgeModel, setJudgeModel] = useState<Model | null>(null);
+  
+  // Blind mode - hides model names until after voting
+  const [blindMode, setBlindMode] = useState(false);
   const [judgeVerdict, setJudgeVerdict] = useState<{
     winner: 'A' | 'B';
     reasoning: string;
@@ -96,25 +99,28 @@ function BattleContent() {
 
   // Build lightbox images array based on battle mode
   const getLightboxImages = useCallback(() => {
+    // In blind mode, hide model names until results phase
+    const shouldHideNames = blindMode && phase !== 'results';
+    
     if (battleMode === '1v1') {
       const images: Array<{ url: string; modelName: string }> = [];
       if (imageA && modelA) {
-        images.push({ url: imageA, modelName: modelA.name });
+        images.push({ url: imageA, modelName: shouldHideNames ? 'Response A' : modelA.name });
       }
       if (imageB && modelB) {
-        images.push({ url: imageB, modelName: modelB.name });
+        images.push({ url: imageB, modelName: shouldHideNames ? 'Response B' : modelB.name });
       }
       return images;
     } else {
       // Multi mode
       return selectedModels
         .filter(model => multiImages[model.id])
-        .map(model => ({
+        .map((model, index) => ({
           url: multiImages[model.id],
-          modelName: model.name,
+          modelName: shouldHideNames ? `Response ${index + 1}` : model.name,
         }));
     }
-  }, [battleMode, imageA, imageB, modelA, modelB, selectedModels, multiImages]);
+  }, [battleMode, imageA, imageB, modelA, modelB, selectedModels, multiImages, blindMode, phase]);
 
   const lightboxImages = getLightboxImages();
 
@@ -831,6 +837,33 @@ function BattleContent() {
             </div>
           )}
 
+          {/* Blind Mode Toggle - only show when AI Judge is off */}
+          {!useJudge && (
+            <div className="mb-6 p-4 rounded-xl border border-arcade-purple/30 bg-arcade-dark/30">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">🙈</span>
+                  <div>
+                    <span className="text-arcade-purple font-medium">Blind Mode</span>
+                    <p className="text-xs text-gray-500 mt-0.5">Hide model names until after you vote</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setBlindMode(!blindMode)}
+                  className={`relative w-12 h-6 rounded-full transition-colors overflow-hidden ${
+                    blindMode ? 'bg-arcade-green' : 'bg-gray-700'
+                  }`}
+                >
+                  <span
+                    className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-all duration-200 ${
+                      blindMode ? 'translate-x-6' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Start Button */}
           <div className="text-center">
             <button
@@ -839,7 +872,7 @@ function BattleContent() {
               className="arcade-btn arcade-btn-primary text-xl px-12 py-4 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 mx-auto"
             >
               <Play className="w-6 h-6" />
-              START {battleMode === 'multi' ? 'MULTI ' : ''}BATTLE {useJudge && '(Judged)'}
+              START {battleMode === 'multi' ? 'MULTI ' : ''}BATTLE {useJudge && '(Judged)'}{blindMode && !useJudge && ' (Blind)'}
             </button>
           </div>
         </motion.div>
@@ -967,8 +1000,8 @@ function BattleContent() {
             <div className="text-white">{prompt}</div>
           </div>
           <div className="grid md:grid-cols-2 gap-6 mb-8">
-            <ResponseCard label="A" response={responseA} loading={loadingA} model={phase === 'voting' ? modelA : null} isWinner={winner === 'A'} onVote={phase === 'voting' ? () => handleVote('A') : undefined} imageUrl={contentType === 'image' ? imageA : undefined} onImageClick={imageA ? () => openLightbox(0) : undefined} />
-            <ResponseCard label="B" response={responseB} loading={loadingB} model={phase === 'voting' ? modelB : null} isWinner={winner === 'B'} onVote={phase === 'voting' ? () => handleVote('B') : undefined} imageUrl={contentType === 'image' ? imageB : undefined} onImageClick={imageB ? () => openLightbox(imageA ? 1 : 0) : undefined} />
+            <ResponseCard label="A" response={responseA} loading={loadingA} model={phase === 'voting' && !blindMode ? modelA : null} isWinner={winner === 'A'} onVote={phase === 'voting' ? () => handleVote('A') : undefined} imageUrl={contentType === 'image' ? imageA : undefined} onImageClick={imageA ? () => openLightbox(0) : undefined} />
+            <ResponseCard label="B" response={responseB} loading={loadingB} model={phase === 'voting' && !blindMode ? modelB : null} isWinner={winner === 'B'} onVote={phase === 'voting' ? () => handleVote('B') : undefined} imageUrl={contentType === 'image' ? imageB : undefined} onImageClick={imageB ? () => openLightbox(imageA ? 1 : 0) : undefined} />
           </div>
           {phase === 'voting' && !useJudge && <div className="text-center text-arcade-cyan animate-pulse">⬆️ Click on the response you think is better! ⬆️</div>}
           {judging && (
@@ -1003,7 +1036,7 @@ function BattleContent() {
                   response={multiResponses[model.id] || ''}
                   loading={multiLoading[model.id]}
                   isWinner={multiWinner === model.id}
-                  showModel={phase === 'voting'}
+                  showModel={phase === 'voting' && !blindMode}
                   onVote={phase === 'voting' ? () => handleMultiVote(model.id) : undefined}
                   imageUrl={contentType === 'image' ? multiImages[model.id] : undefined}
                   onImageClick={multiImages[model.id] ? () => openLightbox(lightboxIdx) : undefined}
@@ -1207,8 +1240,8 @@ function MultiResponseCard({ model, response, loading, isWinner, showModel, onVo
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className={`response-card rounded-xl border-2 border-arcade-purple/50 ${isWinner ? 'border-arcade-green bg-arcade-green/10' : ''} overflow-hidden`}>
       <div className="p-3 bg-arcade-purple/10 flex items-center justify-between">
-        {showModel ? <span className="flex items-center gap-2"><span>{model.icon}</span><span className="text-sm font-medium">{model.shortName}</span></span> : <span className="text-gray-500 text-sm">??? (Hidden)</span>}
-        <span className="text-xs text-arcade-cyan">{model.elo} ELO</span>
+        {showModel ? <span className="flex items-center gap-2"><span>{model.icon}</span><span className="text-sm font-medium">{model.shortName}</span></span> : <span className="text-gray-500 text-sm">🙈 Hidden</span>}
+        {showModel && <span className="text-xs text-arcade-cyan">{model.elo} ELO</span>}
       </div>
       <div className="p-3 h-64 overflow-y-auto bg-arcade-dark/30 text-sm">
         {loading ? (
@@ -1219,7 +1252,7 @@ function MultiResponseCard({ model, response, loading, isWinner, showModel, onVo
           <div className="w-full h-full flex items-center justify-center">
             <img 
               src={imageUrl} 
-              alt={`Response from ${model.shortName}`} 
+              alt={showModel ? `Response from ${model.shortName}` : 'Generated image'} 
               className="max-w-full max-h-full object-contain rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
               onClick={onImageClick}
               title="Click to view fullscreen"
