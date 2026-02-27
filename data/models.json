@@ -4,630 +4,482 @@
       "id": "claude-opus-4-6",
       "name": "Claude Opus 4.6",
       "shortName": "Opus 4.6",
-      "icon": "\ud83c\udfad",
+      "icon": "🎭",
       "color": "#d97706",
       "type": "premium",
       "elo": 1600,
       "wins": 0,
       "losses": 0,
       "description": "Anthropic's most capable model",
-      "strengths": [
-        "Deep reasoning",
-        "Nuance",
-        "Complex tasks"
-      ]
+      "strengths": ["Deep reasoning", "Nuance", "Complex tasks"]
     },
     {
       "id": "claude-opus-45",
       "name": "Claude Opus 4.5",
       "shortName": "Opus 4.5",
-      "icon": "\ud83c\udfad",
+      "icon": "🎭",
       "color": "#b45309",
       "type": "premium",
       "elo": 1580,
       "wins": 0,
       "losses": 0,
       "description": "Anthropic's flagship model",
-      "strengths": [
-        "Analysis",
-        "Writing",
-        "Reasoning"
-      ]
+      "strengths": ["Analysis", "Writing", "Reasoning"]
     },
     {
       "id": "claude-sonnet-4-6",
       "name": "Claude Sonnet 4.6",
       "shortName": "Sonnet 4.6",
-      "icon": "\ud83d\udcdd",
+      "icon": "📝",
       "color": "#ea580c",
       "type": "premium",
       "elo": 1550,
       "wins": 0,
       "losses": 0,
       "description": "Fast and capable Claude",
-      "strengths": [
-        "Speed",
-        "Coding",
-        "Analysis"
-      ]
+      "strengths": ["Speed", "Coding", "Analysis"]
     },
     {
       "id": "claude-sonnet-45",
       "name": "Claude Sonnet 4.5",
       "shortName": "Sonnet 4.5",
-      "icon": "\ud83d\udcdd",
+      "icon": "📝",
       "color": "#f97316",
       "type": "premium",
       "elo": 1530,
       "wins": 0,
       "losses": 0,
       "description": "Balanced Claude model",
-      "strengths": [
-        "Speed",
-        "Versatility",
-        "Coding"
-      ]
+      "strengths": ["Speed", "Versatility", "Coding"]
     },
     {
       "id": "openai-gpt-53-codex",
       "name": "GPT-5.3 Codex",
       "shortName": "GPT-5.3",
-      "icon": "\ud83e\udd16",
+      "icon": "🤖",
       "color": "#10b981",
       "type": "premium",
       "elo": 1590,
       "wins": 0,
       "losses": 0,
       "description": "OpenAI's latest coding model",
-      "strengths": [
-        "Coding",
-        "Logic",
-        "Problem-solving"
-      ]
+      "strengths": ["Coding", "Logic", "Problem-solving"]
     },
     {
       "id": "openai-gpt-52-codex",
       "name": "GPT-5.2 Codex",
       "shortName": "GPT-5.2 Codex",
-      "icon": "\ud83e\udd16",
+      "icon": "🤖",
       "color": "#059669",
       "type": "premium",
       "elo": 1560,
       "wins": 0,
       "losses": 0,
       "description": "OpenAI coding specialist",
-      "strengths": [
-        "Coding",
-        "Analysis",
-        "Debugging"
-      ]
+      "strengths": ["Coding", "Analysis", "Debugging"]
     },
     {
       "id": "openai-gpt-52",
       "name": "GPT-5.2",
       "shortName": "GPT-5.2",
-      "icon": "\ud83e\udd16",
+      "icon": "🤖",
       "color": "#047857",
       "type": "premium",
       "elo": 1570,
       "wins": 0,
       "losses": 0,
       "description": "OpenAI's powerful GPT-5",
-      "strengths": [
-        "General",
-        "Reasoning",
-        "Creativity"
-      ]
+      "strengths": ["General", "Reasoning", "Creativity"]
     },
     {
       "id": "openai-gpt-oss-120b",
       "name": "GPT-OSS 120B",
       "shortName": "GPT-OSS",
-      "icon": "\ud83e\udd16",
+      "icon": "🤖",
       "color": "#34d399",
       "type": "chat",
       "elo": 1520,
       "wins": 0,
       "losses": 0,
       "description": "Open-source GPT variant",
-      "strengths": [
-        "General",
-        "Accessible",
-        "Versatile"
-      ]
+      "strengths": ["General", "Accessible", "Versatile"]
     },
     {
       "id": "gemini-3-1-pro-preview",
       "name": "Gemini 3.1 Pro",
       "shortName": "Gemini 3.1",
-      "icon": "\ud83d\udc8e",
+      "icon": "💎",
       "color": "#4285f4",
       "type": "premium",
       "elo": 1575,
       "wins": 0,
       "losses": 0,
       "description": "Google's latest Gemini",
-      "strengths": [
-        "Multimodal",
-        "Reasoning",
-        "Knowledge"
-      ]
+      "strengths": ["Multimodal", "Reasoning", "Knowledge"]
     },
     {
       "id": "gemini-3-pro-preview",
       "name": "Gemini 3 Pro",
       "shortName": "Gemini 3",
-      "icon": "\ud83d\udc8e",
+      "icon": "💎",
       "color": "#1a73e8",
       "type": "premium",
       "elo": 1555,
       "wins": 0,
       "losses": 0,
       "description": "Google's capable Gemini",
-      "strengths": [
-        "Analysis",
-        "Coding",
-        "Knowledge"
-      ]
+      "strengths": ["Analysis", "Coding", "Knowledge"]
     },
     {
       "id": "gemini-3-flash-preview",
       "name": "Gemini 3 Flash",
       "shortName": "Gemini Flash",
-      "icon": "\u26a1",
+      "icon": "⚡",
       "color": "#669df6",
       "type": "chat",
       "elo": 1500,
       "wins": 0,
       "losses": 0,
       "description": "Fast Gemini model",
-      "strengths": [
-        "Speed",
-        "Efficiency",
-        "Quick tasks"
-      ]
+      "strengths": ["Speed", "Efficiency", "Quick tasks"]
     },
     {
       "id": "grok-41-fast",
       "name": "Grok 4.1 Fast",
       "shortName": "Grok 4.1",
-      "icon": "\ud83d\ude80",
+      "icon": "🚀",
       "color": "#ef4444",
       "type": "premium",
       "elo": 1540,
       "wins": 0,
       "losses": 0,
       "description": "xAI's witty Grok",
-      "strengths": [
-        "Humor",
-        "Speed",
-        "Real-time"
-      ]
+      "strengths": ["Humor", "Speed", "Real-time"]
     },
     {
       "id": "grok-code-fast-1",
       "name": "Grok Code Fast",
       "shortName": "Grok Code",
-      "icon": "\ud83d\udcbb",
+      "icon": "💻",
       "color": "#dc2626",
       "type": "chat",
       "elo": 1510,
       "wins": 0,
       "losses": 0,
       "description": "Grok coding specialist",
-      "strengths": [
-        "Coding",
-        "Speed",
-        "Debugging"
-      ]
+      "strengths": ["Coding", "Speed", "Debugging"]
     },
     {
       "id": "zai-org-glm-5",
       "name": "GLM-5",
       "shortName": "GLM-5",
-      "icon": "\ud83e\udde0",
+      "icon": "🧠",
       "color": "#8b5cf6",
       "type": "premium",
       "elo": 1565,
       "wins": 0,
       "losses": 0,
       "description": "Zhipu's most capable model",
-      "strengths": [
-        "Reasoning",
-        "Chinese",
-        "Coding"
-      ]
+      "strengths": ["Reasoning", "Chinese", "Coding"]
     },
     {
       "id": "zai-org-glm-4.7",
       "name": "GLM-4.7",
       "shortName": "GLM-4.7",
-      "icon": "\ud83e\udde0",
+      "icon": "🧠",
       "color": "#7c3aed",
       "type": "chat",
       "elo": 1530,
       "wins": 0,
       "losses": 0,
       "description": "Zhipu's capable GLM",
-      "strengths": [
-        "Bilingual",
-        "Reasoning",
-        "Analysis"
-      ]
+      "strengths": ["Bilingual", "Reasoning", "Analysis"]
     },
     {
       "id": "zai-org-glm-4.7-flash",
       "name": "GLM-4.7 Flash",
       "shortName": "GLM Flash",
-      "icon": "\u26a1",
+      "icon": "⚡",
       "color": "#a78bfa",
       "type": "chat",
       "elo": 1490,
       "wins": 0,
       "losses": 0,
       "description": "Fast GLM variant",
-      "strengths": [
-        "Speed",
-        "Efficiency",
-        "Quick tasks"
-      ]
+      "strengths": ["Speed", "Efficiency", "Quick tasks"]
     },
     {
       "id": "olafangensan-glm-4.7-flash-heretic",
       "name": "GLM Heretic",
       "shortName": "Heretic",
-      "icon": "\ud83d\ude08",
+      "icon": "😈",
       "color": "#6d28d9",
       "type": "chat",
       "elo": 1495,
       "wins": 0,
       "losses": 0,
       "description": "Uncensored GLM variant",
-      "strengths": [
-        "Unrestricted",
-        "Creative",
-        "Roleplay"
-      ]
+      "strengths": ["Unrestricted", "Creative", "Roleplay"]
     },
     {
       "id": "kimi-k2-5",
       "name": "Kimi K2.5",
       "shortName": "Kimi",
-      "icon": "\ud83c\udf19",
+      "icon": "🌙",
       "color": "#06b6d4",
       "type": "chat",
       "elo": 1545,
       "wins": 0,
       "losses": 0,
       "description": "Moonshot's capable model",
-      "strengths": [
-        "Long context",
-        "Chinese",
-        "Analysis"
-      ]
+      "strengths": ["Long context", "Chinese", "Analysis"]
     },
     {
       "id": "kimi-k2-thinking",
       "name": "Kimi K2 Thinking",
       "shortName": "Kimi Think",
-      "icon": "\ud83e\udd14",
+      "icon": "🤔",
       "color": "#0891b2",
       "type": "reasoning",
       "elo": 1555,
       "wins": 0,
       "losses": 0,
       "description": "Kimi with reasoning",
-      "strengths": [
-        "Deep thinking",
-        "Math",
-        "Logic"
-      ]
+      "strengths": ["Deep thinking", "Math", "Logic"]
     },
     {
       "id": "deepseek-v3.2",
       "name": "DeepSeek V3.2",
       "shortName": "DeepSeek",
-      "icon": "\ud83d\udd2e",
+      "icon": "🔮",
       "color": "#0ea5e9",
       "type": "chat",
       "elo": 1540,
       "wins": 0,
       "losses": 0,
       "description": "DeepSeek's latest model",
-      "strengths": [
-        "Coding",
-        "Math",
-        "Reasoning"
-      ]
+      "strengths": ["Coding", "Math", "Reasoning"]
     },
     {
       "id": "minimax-m25",
       "name": "MiniMax M25",
       "shortName": "MiniMax 25",
-      "icon": "\ud83c\udfaf",
+      "icon": "🎯",
       "color": "#f43f5e",
       "type": "chat",
       "elo": 1520,
       "wins": 0,
       "losses": 0,
       "description": "MiniMax's latest model",
-      "strengths": [
-        "Chinese",
-        "Multimodal",
-        "Creative"
-      ]
+      "strengths": ["Chinese", "Multimodal", "Creative"]
     },
     {
       "id": "minimax-m21",
       "name": "MiniMax M21",
       "shortName": "MiniMax 21",
-      "icon": "\ud83c\udfaf",
+      "icon": "🎯",
       "color": "#e11d48",
       "type": "chat",
       "elo": 1500,
       "wins": 0,
       "losses": 0,
       "description": "MiniMax capable model",
-      "strengths": [
-        "General",
-        "Creative",
-        "Fast"
-      ]
+      "strengths": ["General", "Creative", "Fast"]
     },
     {
       "id": "qwen3-235b-a22b-thinking-2507",
       "name": "Qwen3 235B Thinking",
       "shortName": "Qwen Think",
-      "icon": "\ud83e\uddee",
+      "icon": "🧮",
       "color": "#3b82f6",
       "type": "reasoning",
       "elo": 1560,
       "wins": 0,
       "losses": 0,
       "description": "Qwen with chain-of-thought",
-      "strengths": [
-        "Math",
-        "Logic",
-        "Deep reasoning"
-      ]
+      "strengths": ["Math", "Logic", "Deep reasoning"]
     },
     {
       "id": "qwen3-235b-a22b-instruct-2507",
       "name": "Qwen3 235B Instruct",
       "shortName": "Qwen 235B",
-      "icon": "\ud83c\udf93",
+      "icon": "🎓",
       "color": "#2563eb",
       "type": "chat",
       "elo": 1545,
       "wins": 0,
       "losses": 0,
       "description": "Alibaba's large Qwen",
-      "strengths": [
-        "Instructions",
-        "Chinese",
-        "Coding"
-      ]
+      "strengths": ["Instructions", "Chinese", "Coding"]
     },
     {
       "id": "qwen3-next-80b",
       "name": "Qwen3 Next 80B",
       "shortName": "Qwen Next",
-      "icon": "\ud83d\udd1c",
+      "icon": "🔜",
       "color": "#1d4ed8",
       "type": "chat",
       "elo": 1530,
       "wins": 0,
       "losses": 0,
       "description": "Qwen's next-gen model",
-      "strengths": [
-        "General",
-        "Fast",
-        "Versatile"
-      ]
+      "strengths": ["General", "Fast", "Versatile"]
     },
     {
       "id": "qwen3-coder-480b-a35b-instruct",
       "name": "Qwen3 Coder 480B",
       "shortName": "Qwen Coder",
-      "icon": "\ud83d\udc68\u200d\ud83d\udcbb",
+      "icon": "👨‍💻",
       "color": "#1e40af",
       "type": "chat",
       "elo": 1555,
       "wins": 0,
       "losses": 0,
       "description": "Qwen coding specialist",
-      "strengths": [
-        "Coding",
-        "Debugging",
-        "Architecture"
-      ]
+      "strengths": ["Coding", "Debugging", "Architecture"]
     },
     {
       "id": "qwen3-coder-480b-a35b-instruct-turbo",
       "name": "Qwen3 Coder Turbo",
       "shortName": "Qwen Turbo",
-      "icon": "\u26a1",
+      "icon": "⚡",
       "color": "#3730a3",
       "type": "chat",
       "elo": 1535,
       "wins": 0,
       "losses": 0,
       "description": "Fast Qwen coder",
-      "strengths": [
-        "Speed",
-        "Coding",
-        "Efficiency"
-      ]
+      "strengths": ["Speed", "Coding", "Efficiency"]
     },
     {
       "id": "qwen3-4b",
       "name": "Qwen3 4B",
       "shortName": "Qwen 4B",
-      "icon": "\ud83d\udc23",
+      "icon": "🐣",
       "color": "#60a5fa",
       "type": "chat",
       "elo": 1400,
       "wins": 0,
       "losses": 0,
       "description": "Lightweight Qwen",
-      "strengths": [
-        "Fast",
-        "Efficient",
-        "Simple tasks"
-      ]
+      "strengths": ["Fast", "Efficient", "Simple tasks"]
     },
     {
       "id": "qwen3-vl-235b-a22b",
       "name": "Qwen3 VL 235B",
       "shortName": "Qwen VL",
-      "icon": "\ud83d\udc41\ufe0f",
+      "icon": "👁️",
       "color": "#4f46e5",
       "type": "chat",
       "elo": 1525,
       "wins": 0,
       "losses": 0,
       "description": "Qwen vision-language",
-      "strengths": [
-        "Vision",
-        "Multimodal",
-        "Analysis"
-      ]
+      "strengths": ["Vision", "Multimodal", "Analysis"]
     },
     {
       "id": "llama-3.3-70b",
       "name": "Llama 3.3 70B",
       "shortName": "Llama 70B",
-      "icon": "\ud83e\udd99",
+      "icon": "🦙",
       "color": "#0284c7",
       "type": "chat",
       "elo": 1520,
       "wins": 0,
       "losses": 0,
       "description": "Meta's latest Llama",
-      "strengths": [
-        "General",
-        "Coding",
-        "Reasoning"
-      ]
+      "strengths": ["General", "Coding", "Reasoning"]
     },
     {
       "id": "llama-3.2-3b",
       "name": "Llama 3.2 3B",
       "shortName": "Llama 3B",
-      "icon": "\ud83e\udd99",
+      "icon": "🦙",
       "color": "#0369a1",
       "type": "chat",
       "elo": 1380,
       "wins": 0,
       "losses": 0,
       "description": "Lightweight Llama",
-      "strengths": [
-        "Fast",
-        "Efficient",
-        "Mobile"
-      ]
+      "strengths": ["Fast", "Efficient", "Mobile"]
     },
     {
       "id": "hermes-3-llama-3.1-405b",
       "name": "Hermes 3 405B",
       "shortName": "Hermes 405B",
-      "icon": "\ud83e\udebd",
+      "icon": "🪽",
       "color": "#0c4a6e",
       "type": "chat",
       "elo": 1550,
       "wins": 0,
       "losses": 0,
       "description": "Nous Hermes on Llama 405B",
-      "strengths": [
-        "Uncensored",
-        "Roleplay",
-        "Creative"
-      ]
+      "strengths": ["Uncensored", "Roleplay", "Creative"]
     },
     {
       "id": "mistral-31-24b",
       "name": "Mistral 31 24B",
       "shortName": "Mistral 31",
-      "icon": "\ud83c\udf2c\ufe0f",
+      "icon": "🌬️",
       "color": "#7c3aed",
       "type": "chat",
       "elo": 1480,
       "wins": 0,
       "losses": 0,
       "description": "Mistral's efficient model",
-      "strengths": [
-        "Speed",
-        "Coding",
-        "European"
-      ]
+      "strengths": ["Speed", "Coding", "European"]
     },
     {
       "id": "google-gemma-3-27b-it",
       "name": "Gemma 3 27B",
       "shortName": "Gemma 3",
-      "icon": "\ud83d\udca0",
+      "icon": "💠",
       "color": "#4ade80",
       "type": "chat",
       "elo": 1470,
       "wins": 0,
       "losses": 0,
       "description": "Google's open Gemma",
-      "strengths": [
-        "Open source",
-        "Efficient",
-        "Versatile"
-      ]
+      "strengths": ["Open source", "Efficient", "Versatile"]
     },
     {
       "id": "nvidia-nemotron-3-nano-30b-a3b",
       "name": "Nemotron 3 Nano",
       "shortName": "Nemotron",
-      "icon": "\ud83c\udfae",
+      "icon": "🎮",
       "color": "#84cc16",
       "type": "chat",
       "elo": 1460,
       "wins": 0,
       "losses": 0,
       "description": "NVIDIA's Nemotron",
-      "strengths": [
-        "Efficient",
-        "GPU-optimized",
-        "Fast"
-      ]
+      "strengths": ["Efficient", "GPU-optimized", "Fast"]
     },
     {
       "id": "venice-uncensored",
       "name": "Venice Uncensored",
       "shortName": "Venice",
-      "icon": "\ud83e\udd81",
+      "icon": "🦁",
       "color": "#facc15",
       "type": "chat",
       "elo": 1500,
       "wins": 0,
       "losses": 0,
       "description": "Venice's flagship uncensored",
-      "strengths": [
-        "Uncensored",
-        "Creative",
-        "Honest"
-      ]
+      "strengths": ["Uncensored", "Creative", "Honest"]
     },
     {
       "id": "venice-uncensored-role-play",
       "name": "Venice Roleplay",
       "shortName": "Venice RP",
-      "icon": "\ud83c\udfad",
+      "icon": "🎭",
       "color": "#fbbf24",
       "type": "chat",
       "elo": 1490,
       "wins": 0,
       "losses": 0,
       "description": "Venice for roleplay",
-      "strengths": [
-        "Roleplay",
-        "Creative",
-        "Characters"
-      ]
+      "strengths": ["Roleplay", "Creative", "Characters"]
     }
   ],
   "imageModels": [
@@ -635,120 +487,235 @@
       "id": "z-image-turbo",
       "name": "Z-Image Turbo",
       "shortName": "Z-Image",
-      "icon": "\u26a1",
+      "icon": "⚡",
       "color": "#8b5cf6",
       "type": "image",
-      "elo": 1550,
+      "elo": 1500,
       "wins": 0,
       "losses": 0,
-      "description": "Venice's fast image model",
-      "strengths": [
-        "Speed",
-        "Quality",
-        "Versatile"
-      ]
-    },
-    {
-      "id": "nano-banana-pro",
-      "name": "Nano Banana Pro",
-      "shortName": "Nano Banana",
-      "icon": "\ud83c\udf4c",
-      "color": "#fbbf24",
-      "type": "image",
-      "elo": 1580,
-      "wins": 0,
-      "losses": 0,
-      "description": "High quality photorealism",
-      "strengths": [
-        "Photorealism",
-        "Detail",
-        "Quality"
-      ]
+      "description": "Fast high-quality image generation from Venice",
+      "strengths": ["Speed", "Quality", "Versatile"]
     },
     {
       "id": "flux-2-pro",
       "name": "Flux 2 Pro",
       "shortName": "Flux 2 Pro",
-      "icon": "\ud83c\udfa8",
+      "icon": "🎨",
       "color": "#ec4899",
       "type": "image",
-      "elo": 1600,
+      "elo": 1500,
       "wins": 0,
       "losses": 0,
-      "description": "Black Forest Labs flagship",
-      "strengths": [
-        "Quality",
-        "Detail",
-        "Art"
-      ]
+      "description": "Black Forest Labs flagship image model",
+      "strengths": ["Quality", "Detail", "Artistic"]
     },
     {
       "id": "flux-2-max",
       "name": "Flux 2 Max",
       "shortName": "Flux 2 Max",
-      "icon": "\ud83d\uddbc\ufe0f",
+      "icon": "🖼️",
       "color": "#db2777",
       "type": "image",
-      "elo": 1580,
+      "elo": 1500,
       "wins": 0,
       "losses": 0,
-      "description": "High quality Flux variant",
-      "strengths": [
-        "Quality",
-        "Speed",
-        "Versatile"
-      ]
+      "description": "High quality Flux variant from Black Forest Labs",
+      "strengths": ["Quality", "Speed", "Versatile"]
     },
     {
-      "id": "hidream",
-      "name": "HiDream",
-      "shortName": "HiDream",
-      "icon": "\ud83d\udcad",
-      "color": "#06b6d4",
+      "id": "nano-banana-pro",
+      "name": "Nano Banana Pro",
+      "shortName": "Nano Pro",
+      "icon": "🍌",
+      "color": "#fbbf24",
       "type": "image",
-      "elo": 1540,
+      "elo": 1500,
       "wins": 0,
       "losses": 0,
-      "description": "Text and design specialist",
-      "strengths": [
-        "Text rendering",
-        "Design",
-        "Creative"
-      ]
+      "description": "Google's state-of-the-art image model",
+      "strengths": ["Photorealism", "Detail", "Quality"]
+    },
+    {
+      "id": "nano-banana-2",
+      "name": "Nano Banana 2",
+      "shortName": "Nano 2",
+      "icon": "🍌",
+      "color": "#f59e0b",
+      "type": "image",
+      "elo": 1500,
+      "wins": 0,
+      "losses": 0,
+      "description": "Google's latest state-of-the-art image model",
+      "strengths": ["Photorealism", "4K", "Web Search"]
+    },
+    {
+      "id": "gpt-image-1-5",
+      "name": "GPT Image 1.5",
+      "shortName": "GPT Image",
+      "icon": "🤖",
+      "color": "#10b981",
+      "type": "image",
+      "elo": 1500,
+      "wins": 0,
+      "losses": 0,
+      "description": "High quality image generation powered by OpenAI",
+      "strengths": ["Quality", "Accuracy", "Creativity"]
+    },
+    {
+      "id": "imagineart-1.5-pro",
+      "name": "ImagineArt 1.5 Pro",
+      "shortName": "ImagineArt",
+      "icon": "✨",
+      "color": "#6366f1",
+      "type": "image",
+      "elo": 1500,
+      "wins": 0,
+      "losses": 0,
+      "description": "Ultra-high-fidelity 4K visuals with lifelike realism",
+      "strengths": ["4K", "Realism", "Professional"]
+    },
+    {
+      "id": "recraft-v4",
+      "name": "Recraft V4",
+      "shortName": "Recraft V4",
+      "icon": "🔧",
+      "color": "#059669",
+      "type": "image",
+      "elo": 1500,
+      "wins": 0,
+      "losses": 0,
+      "description": "High quality image generation with exceptional text rendering",
+      "strengths": ["Text", "Design", "Clean"]
+    },
+    {
+      "id": "recraft-v4-pro",
+      "name": "Recraft V4 Pro",
+      "shortName": "Recraft Pro",
+      "icon": "🔧",
+      "color": "#047857",
+      "type": "image",
+      "elo": 1500,
+      "wins": 0,
+      "losses": 0,
+      "description": "Premium Recraft with exceptional text rendering and superior detail",
+      "strengths": ["Text", "Detail", "Professional"]
+    },
+    {
+      "id": "seedream-v4",
+      "name": "Seedream V4.5",
+      "shortName": "Seedream V4",
+      "icon": "🌱",
+      "color": "#22c55e",
+      "type": "image",
+      "elo": 1500,
+      "wins": 0,
+      "losses": 0,
+      "description": "Uncensored image model from ByteDance",
+      "strengths": ["Uncensored", "Speed", "Quality"]
+    },
+    {
+      "id": "seedream-v5-lite",
+      "name": "Seedream V5 Lite",
+      "shortName": "Seedream V5",
+      "icon": "🌱",
+      "color": "#16a34a",
+      "type": "image",
+      "elo": 1500,
+      "wins": 0,
+      "losses": 0,
+      "description": "Fast high quality uncensored generation from ByteDance",
+      "strengths": ["Uncensored", "Fast", "Quality"]
     },
     {
       "id": "stable-diffusion-3.5-rev2",
       "name": "Venice SD35",
       "shortName": "SD35",
-      "icon": "\ud83c\udf0a",
+      "icon": "🌊",
       "color": "#7c3aed",
       "type": "image",
-      "elo": 1530,
+      "elo": 1500,
       "wins": 0,
       "losses": 0,
-      "description": "Artistic Stable Diffusion",
-      "strengths": [
-        "Artistic",
-        "Creative",
-        "Detailed"
-      ]
+      "description": "Venice's artistic Stable Diffusion model",
+      "strengths": ["Artistic", "Creative", "Detailed"]
     },
     {
-      "id": "recraft-v4-pro",
-      "name": "Recraft V4 Pro",
-      "shortName": "Recraft",
-      "icon": "\ud83d\udd27",
-      "color": "#059669",
+      "id": "hidream",
+      "name": "HiDream",
+      "shortName": "HiDream",
+      "icon": "💭",
+      "color": "#06b6d4",
       "type": "image",
-      "elo": 1520,
+      "elo": 1500,
       "wins": 0,
       "losses": 0,
-      "description": "Design-focused generation",
-      "strengths": [
-        "Design",
-        "Branding",
-        "Clean"
-      ]
+      "description": "Text to image and design specialist",
+      "strengths": ["Text rendering", "Design", "Creative"]
+    },
+    {
+      "id": "lustify-sdxl",
+      "name": "Lustify SDXL",
+      "shortName": "Lustify SDXL",
+      "icon": "🔥",
+      "color": "#ef4444",
+      "type": "image",
+      "elo": 1500,
+      "wins": 0,
+      "losses": 0,
+      "description": "Uncensored NSFW image generation",
+      "strengths": ["NSFW", "Uncensored", "Photorealism"]
+    },
+    {
+      "id": "lustify-v7",
+      "name": "Lustify V7",
+      "shortName": "Lustify V7",
+      "icon": "🔥",
+      "color": "#dc2626",
+      "type": "image",
+      "elo": 1500,
+      "wins": 0,
+      "losses": 0,
+      "description": "Latest uncensored NSFW image generation",
+      "strengths": ["NSFW", "Uncensored", "Quality"]
+    },
+    {
+      "id": "qwen-image",
+      "name": "Qwen Image",
+      "shortName": "Qwen Image",
+      "icon": "🖼️",
+      "color": "#3b82f6",
+      "type": "image",
+      "elo": 1500,
+      "wins": 0,
+      "losses": 0,
+      "description": "Best prompt adherence and text-in-image generation",
+      "strengths": ["Text", "Adherence", "Quality"]
+    },
+    {
+      "id": "wai-illu",
+      "name": "Anime (WAI)",
+      "shortName": "WAI Anime",
+      "icon": "🎌",
+      "color": "#f472b6",
+      "type": "image",
+      "elo": 1500,
+      "wins": 0,
+      "losses": 0,
+      "description": "Anime and hentai style generation",
+      "strengths": ["Anime", "Hentai", "Uncensored"]
+    },
+    {
+      "id": "chroma",
+      "name": "Chroma",
+      "shortName": "Chroma",
+      "icon": "🌈",
+      "color": "#a855f7",
+      "type": "image",
+      "elo": 1500,
+      "wins": 0,
+      "losses": 0,
+      "description": "Uncensored photorealistic image generation",
+      "strengths": ["NSFW", "Photorealism", "Uncensored"]
     }
   ],
   "visionModels": [
@@ -756,103 +723,79 @@
       "id": "claude-opus-4-6",
       "name": "Claude Opus 4.6",
       "shortName": "Opus 4.6",
-      "icon": "\ud83c\udfad",
+      "icon": "🎭",
       "color": "#d97706",
       "type": "vision",
       "elo": 1600,
       "wins": 0,
       "losses": 0,
       "description": "Anthropic's most capable vision model",
-      "strengths": [
-        "Deep analysis",
-        "Nuance",
-        "Detail"
-      ]
+      "strengths": ["Deep analysis", "Nuance", "Detail"]
     },
     {
       "id": "claude-sonnet-4-6",
       "name": "Claude Sonnet 4.6",
       "shortName": "Sonnet 4.6",
-      "icon": "\ud83d\udcdd",
+      "icon": "📝",
       "color": "#ea580c",
       "type": "vision",
       "elo": 1550,
       "wins": 0,
       "losses": 0,
       "description": "Fast Claude with vision",
-      "strengths": [
-        "Speed",
-        "Analysis",
-        "Balanced"
-      ]
+      "strengths": ["Speed", "Analysis", "Balanced"]
     },
     {
       "id": "openai-gpt-52",
       "name": "GPT-5.2",
       "shortName": "GPT-5.2",
-      "icon": "\ud83e\udd16",
+      "icon": "🤖",
       "color": "#047857",
       "type": "vision",
       "elo": 1570,
       "wins": 0,
       "losses": 0,
       "description": "OpenAI's multimodal GPT-5",
-      "strengths": [
-        "General",
-        "Creativity",
-        "Accuracy"
-      ]
+      "strengths": ["General", "Creativity", "Accuracy"]
     },
     {
       "id": "gemini-3-1-pro-preview",
       "name": "Gemini 3.1 Pro",
       "shortName": "Gemini 3.1",
-      "icon": "\ud83d\udc8e",
+      "icon": "💎",
       "color": "#4285f4",
       "type": "vision",
       "elo": 1575,
       "wins": 0,
       "losses": 0,
       "description": "Google's multimodal Gemini",
-      "strengths": [
-        "Multimodal",
-        "Reasoning",
-        "Knowledge"
-      ]
+      "strengths": ["Multimodal", "Reasoning", "Knowledge"]
     },
     {
       "id": "qwen3-vl-235b-a22b",
       "name": "Qwen3 VL 235B",
       "shortName": "Qwen VL",
-      "icon": "\ud83d\udc41\ufe0f",
+      "icon": "👁️",
       "color": "#4f46e5",
       "type": "vision",
       "elo": 1525,
       "wins": 0,
       "losses": 0,
       "description": "Qwen vision-language model",
-      "strengths": [
-        "Vision",
-        "Multimodal",
-        "Detail"
-      ]
+      "strengths": ["Vision", "Multimodal", "Detail"]
     },
     {
       "id": "grok-41-fast",
       "name": "Grok 4.1",
       "shortName": "Grok 4.1",
-      "icon": "\ud83d\ude80",
+      "icon": "🚀",
       "color": "#ef4444",
       "type": "vision",
       "elo": 1540,
       "wins": 0,
       "losses": 0,
       "description": "xAI's multimodal Grok",
-      "strengths": [
-        "Speed",
-        "Wit",
-        "Analysis"
-      ]
+      "strengths": ["Speed", "Wit", "Analysis"]
     }
   ]
 }
