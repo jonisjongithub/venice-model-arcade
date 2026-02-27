@@ -1,19 +1,58 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { ArrowLeft, Trophy, TrendingUp, TrendingDown, Minus, Medal, Swords } from 'lucide-react';
-import { useArcadeStore } from '@/lib/store';
+import { ArrowLeft, Trophy, TrendingUp, TrendingDown, Minus, Medal, Swords, Globe, Type, Image as ImageIcon } from 'lucide-react';
+import { useArcadeStore, Model } from '@/lib/store';
 import { getEloTier } from '@/lib/elo';
+
+// Extended model type for global leaderboard (includes server-enriched data)
+type LeaderboardModel = Model;
+
+type LeaderboardMode = 'text' | 'image';
 
 export default function LeaderboardPage() {
   const [mounted, setMounted] = useState(false);
-  const { models, battles } = useArcadeStore();
+  const [mode, setMode] = useState<LeaderboardMode>('text');
+  const [isGlobal, setIsGlobal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [globalModels, setGlobalModels] = useState<LeaderboardModel[] | null>(null);
+  const { models, imageModels, battles } = useArcadeStore();
+
+  // Fetch global leaderboard
+  const fetchGlobalLeaderboard = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/leaderboard?mode=${mode}`);
+      const data = await response.json();
+      
+      if (data.success && data.data) {
+        setGlobalModels(data.data);
+        setIsGlobal(true);
+      } else {
+        // Fallback to local data
+        setGlobalModels(null);
+        setIsGlobal(false);
+      }
+    } catch (error) {
+      console.error('Failed to fetch global leaderboard:', error);
+      setGlobalModels(null);
+      setIsGlobal(false);
+    } finally {
+      setLoading(false);
+    }
+  }, [mode]);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (mounted) {
+      fetchGlobalLeaderboard();
+    }
+  }, [mounted, mode, fetchGlobalLeaderboard]);
 
   if (!mounted) {
     return (
@@ -23,8 +62,18 @@ export default function LeaderboardPage() {
     );
   }
 
+  // Get appropriate models based on mode and source
+  const getDisplayModels = (): LeaderboardModel[] => {
+    if (globalModels) {
+      return globalModels;
+    }
+    // Fallback to local storage
+    const localModels = mode === 'text' ? models : imageModels;
+    return localModels as LeaderboardModel[];
+  };
+
   // Sort models by ELO
-  const sortedModels = [...models].sort((a, b) => b.elo - a.elo);
+  const sortedModels = [...getDisplayModels()].sort((a, b) => b.elo - a.elo);
 
   // Calculate win rates
   const getWinRate = (wins: number, losses: number) => {
@@ -41,15 +90,58 @@ export default function LeaderboardPage() {
           <ArrowLeft className="w-5 h-5" />
           <span>Back to Lobby</span>
         </Link>
-        <h1 className="text-2xl md:text-3xl font-arcade text-arcade-yellow flex items-center gap-3">
-          <Trophy className="w-8 h-8" />
-          LEADERBOARD
-        </h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl md:text-3xl font-arcade text-arcade-yellow flex items-center gap-3">
+            <Trophy className="w-8 h-8" />
+            LEADERBOARD
+          </h1>
+          {isGlobal && (
+            <span className="flex items-center gap-1 px-2 py-1 bg-arcade-green/20 border border-arcade-green/50 rounded-full text-arcade-green text-xs font-medium">
+              <Globe className="w-3 h-3" />
+              Global Rankings
+            </span>
+          )}
+        </div>
         <div className="w-24" />
       </div>
 
+      {/* Text/Image Toggle */}
+      <div className="flex justify-center mb-8">
+        <div className="inline-flex rounded-xl border-2 border-arcade-purple/30 bg-arcade-dark/50 p-1">
+          <button
+            onClick={() => setMode('text')}
+            className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all ${
+              mode === 'text'
+                ? 'bg-arcade-purple text-white shadow-lg shadow-arcade-purple/30'
+                : 'text-gray-400 hover:text-white hover:bg-arcade-purple/20'
+            }`}
+          >
+            <Type className="w-5 h-5" />
+            Text Models
+          </button>
+          <button
+            onClick={() => setMode('image')}
+            className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all ${
+              mode === 'image'
+                ? 'bg-arcade-pink text-white shadow-lg shadow-arcade-pink/30'
+                : 'text-gray-400 hover:text-white hover:bg-arcade-pink/20'
+            }`}
+          >
+            <ImageIcon className="w-5 h-5" />
+            Image Models
+          </button>
+        </div>
+      </div>
+
+      {loading && (
+        <div className="flex justify-center mb-4">
+          <div className="text-arcade-cyan animate-pulse">Loading rankings...</div>
+        </div>
+      )}
+
       {/* Podium */}
       <motion.div
+        key={mode}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="max-w-3xl mx-auto mb-12"
@@ -113,6 +205,7 @@ export default function LeaderboardPage() {
 
       {/* Full Rankings */}
       <motion.div
+        key={`rankings-${mode}`}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4 }}
@@ -139,7 +232,7 @@ export default function LeaderboardPage() {
                 key={model.id}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.5 + index * 0.1 }}
+                transition={{ delay: 0.5 + index * 0.05 }}
                 className="leaderboard-row grid grid-cols-12 gap-4 p-4 border-t border-arcade-purple/10 items-center"
               >
                 {/* Rank */}
@@ -221,9 +314,9 @@ export default function LeaderboardPage() {
             color="pink"
           />
           <StatCard
-            label="Active Models"
+            label={`${mode === 'text' ? 'Text' : 'Image'} Models`}
             value={sortedModels.length.toString()}
-            icon={<Trophy className="w-5 h-5" />}
+            icon={mode === 'text' ? <Type className="w-5 h-5" /> : <ImageIcon className="w-5 h-5" />}
             color="yellow"
           />
         </div>
@@ -231,9 +324,12 @@ export default function LeaderboardPage() {
 
       {/* Call to Action */}
       <div className="text-center mt-12">
-        <Link href="/battle?mode=ranked" className="arcade-btn arcade-btn-primary inline-flex items-center gap-2">
+        <Link 
+          href="/battle?mode=ranked" 
+          className="arcade-btn arcade-btn-primary inline-flex items-center gap-2"
+        >
           <Swords className="w-5 h-5" />
-          Start a Ranked Battle
+          Start a Battle
         </Link>
       </div>
     </main>

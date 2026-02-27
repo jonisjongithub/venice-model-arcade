@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef, Suspense } from 'react';
+import { useEffect, useState, useRef, Suspense, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
@@ -9,6 +9,25 @@ import { useArcadeStore, Model } from '@/lib/store';
 import { calculateElo, formatEloChange, getEloTier } from '@/lib/elo';
 import promptsData from '@/data/prompts.json';
 import { nanoid } from 'nanoid';
+
+// Type for prompts data
+interface PromptItem {
+  id: string;
+  text: string;
+  category: string;
+  difficulty: string;
+  bonusXP?: number;
+}
+
+interface PromptsData {
+  prompts: PromptItem[];
+  imagePrompts?: PromptItem[];
+  dailyChallenges: PromptItem[];
+  imageDailyChallenges?: PromptItem[];
+}
+
+const typedPromptsData = promptsData as PromptsData;
+import Lightbox from '@/components/Lightbox';
 
 type BattlePhase = 'setup' | 'vs-screen' | 'battle' | 'voting' | 'results';
 type BattleMode = '1v1' | 'multi';
@@ -55,6 +74,10 @@ function BattleContent() {
   const [xpGained, setXpGained] = useState(0);
   const [suggestedPrompts, setSuggestedPrompts] = useState<string[]>([]);
   
+  // Lightbox state
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+  
   // Judge mode
   const [useJudge, setUseJudge] = useState(false);
   const [judgeModel, setJudgeModel] = useState<Model | null>(null);
@@ -71,6 +94,52 @@ function BattleContent() {
   
   const abortControllerRef = useRef<AbortController | null>(null);
 
+  // Build lightbox images array based on battle mode
+  const getLightboxImages = useCallback(() => {
+    if (battleMode === '1v1') {
+      const images: Array<{ url: string; modelName: string }> = [];
+      if (imageA && modelA) {
+        images.push({ url: imageA, modelName: modelA.name });
+      }
+      if (imageB && modelB) {
+        images.push({ url: imageB, modelName: modelB.name });
+      }
+      return images;
+    } else {
+      // Multi mode
+      return selectedModels
+        .filter(model => multiImages[model.id])
+        .map(model => ({
+          url: multiImages[model.id],
+          modelName: model.name,
+        }));
+    }
+  }, [battleMode, imageA, imageB, modelA, modelB, selectedModels, multiImages]);
+
+  const lightboxImages = getLightboxImages();
+
+  // Lightbox handlers
+  const openLightbox = useCallback((index: number) => {
+    setLightboxIndex(index);
+    setLightboxOpen(true);
+  }, []);
+
+  const closeLightbox = useCallback(() => {
+    setLightboxOpen(false);
+  }, []);
+
+  const nextLightboxImage = useCallback(() => {
+    setLightboxIndex(prev => (prev + 1) % lightboxImages.length);
+  }, [lightboxImages.length]);
+
+  const prevLightboxImage = useCallback(() => {
+    setLightboxIndex(prev => (prev - 1 + lightboxImages.length) % lightboxImages.length);
+  }, [lightboxImages.length]);
+
+  const goToLightboxIndex = useCallback((index: number) => {
+    setLightboxIndex(index);
+  }, []);
+
   // Initialize suggested prompts and random models on mount
   useEffect(() => {
     selectRandomModels();
@@ -86,10 +155,10 @@ function BattleContent() {
 
   function refreshSuggestedPrompts() {
     const promptSource = contentType === 'image' 
-      ? (promptsData as any).imagePrompts || promptsData.prompts
-      : promptsData.prompts;
+      ? (typedPromptsData.imagePrompts || typedPromptsData.prompts)
+      : typedPromptsData.prompts;
     const shuffled = [...promptSource].sort(() => Math.random() - 0.5);
-    setSuggestedPrompts(shuffled.slice(0, 3).map((p: any) => p.text));
+    setSuggestedPrompts(shuffled.slice(0, 3).map((p) => p.text));
   }
 
   function selectRandomModels() {
@@ -132,14 +201,14 @@ function BattleContent() {
   function getRandomPrompt() {
     if (mode === 'daily') {
       const dailySource = contentType === 'image'
-        ? (promptsData as any).imageDailyChallenges || promptsData.dailyChallenges
-        : promptsData.dailyChallenges;
+        ? (typedPromptsData.imageDailyChallenges || typedPromptsData.dailyChallenges)
+        : typedPromptsData.dailyChallenges;
       const daily = dailySource[Math.floor(Math.random() * dailySource.length)];
       return daily.text;
     }
     const promptSource = contentType === 'image'
-      ? (promptsData as any).imagePrompts || promptsData.prompts
-      : promptsData.prompts;
+      ? (typedPromptsData.imagePrompts || typedPromptsData.prompts)
+      : typedPromptsData.prompts;
     const random = promptSource[Math.floor(Math.random() * promptSource.length)];
     return random.text;
   }
@@ -427,13 +496,24 @@ function BattleContent() {
     
     const result = calculateElo(winnerModel.elo, loserModel.elo);
     
-    updateModelElo(winnerModel.id, result.winnerNewElo, true);
-    updateModelElo(loserModel.id, result.loserNewElo, false);
+    updateModelElo(winnerModel.id, result.winnerNewElo, true, contentType === 'image');
+    updateModelElo(loserModel.id, result.loserNewElo, false, contentType === 'image');
     
     setEloResult({
       changeA: choice === 'A' ? result.winnerChange : result.loserChange,
       changeB: choice === 'B' ? result.winnerChange : result.loserChange,
     });
+    
+    // Submit vote to global leaderboard (fire and forget)
+    fetch('/api/vote', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        winner: winnerModel.id,
+        loser: loserModel.id,
+        mode: contentType,
+      }),
+    }).catch(err => console.warn('Failed to submit vote to global leaderboard:', err));
     
     let xp = mode === 'quick' ? 10 : mode === 'ranked' ? 20 : 50;
     setXpGained(xp);
@@ -465,12 +545,24 @@ function BattleContent() {
     setMultiWinner(winnerId);
     
     const winnerModel = selectedModels.find(m => m.id === winnerId)!;
+    const isImage = contentType === 'image';
     
     // Update ELO: winner gains from all losers
     selectedModels.forEach(model => {
       if (model.id !== winnerId) {
         const result = calculateElo(winnerModel.elo, model.elo);
-        updateModelElo(model.id, result.loserNewElo, false);
+        updateModelElo(model.id, result.loserNewElo, false, isImage);
+        
+        // Submit each matchup to global leaderboard (fire and forget)
+        fetch('/api/vote', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            winner: winnerId,
+            loser: model.id,
+            mode: contentType,
+          }),
+        }).catch(err => console.warn('Failed to submit vote to global leaderboard:', err));
       }
     });
     
@@ -479,7 +571,7 @@ function BattleContent() {
       .filter(m => m.id !== winnerId)
       .reduce((sum, m) => sum + m.elo, 0) / (selectedModels.length - 1);
     const winResult = calculateElo(winnerModel.elo, avgOtherElo);
-    updateModelElo(winnerId, winResult.winnerNewElo, true);
+    updateModelElo(winnerId, winResult.winnerNewElo, true, isImage);
     
     let xp = (mode === 'quick' ? 10 : mode === 'ranked' ? 20 : 50) * (selectedModels.length - 1);
     setXpGained(xp);
@@ -875,8 +967,8 @@ function BattleContent() {
             <div className="text-white">{prompt}</div>
           </div>
           <div className="grid md:grid-cols-2 gap-6 mb-8">
-            <ResponseCard label="A" response={responseA} loading={loadingA} model={phase === 'voting' ? modelA : null} isWinner={winner === 'A'} onVote={phase === 'voting' ? () => handleVote('A') : undefined} imageUrl={contentType === 'image' ? imageA : undefined} />
-            <ResponseCard label="B" response={responseB} loading={loadingB} model={phase === 'voting' ? modelB : null} isWinner={winner === 'B'} onVote={phase === 'voting' ? () => handleVote('B') : undefined} imageUrl={contentType === 'image' ? imageB : undefined} />
+            <ResponseCard label="A" response={responseA} loading={loadingA} model={phase === 'voting' ? modelA : null} isWinner={winner === 'A'} onVote={phase === 'voting' ? () => handleVote('A') : undefined} imageUrl={contentType === 'image' ? imageA : undefined} onImageClick={imageA ? () => openLightbox(0) : undefined} />
+            <ResponseCard label="B" response={responseB} loading={loadingB} model={phase === 'voting' ? modelB : null} isWinner={winner === 'B'} onVote={phase === 'voting' ? () => handleVote('B') : undefined} imageUrl={contentType === 'image' ? imageB : undefined} onImageClick={imageB ? () => openLightbox(imageA ? 1 : 0) : undefined} />
           </div>
           {phase === 'voting' && !useJudge && <div className="text-center text-arcade-cyan animate-pulse">⬆️ Click on the response you think is better! ⬆️</div>}
           {judging && (
@@ -898,18 +990,26 @@ function BattleContent() {
             <div className="text-white">{prompt}</div>
           </div>
           <div className={`grid gap-4 mb-8 ${selectedModels.length <= 3 ? 'md:grid-cols-3' : selectedModels.length === 4 ? 'md:grid-cols-2 lg:grid-cols-4' : 'md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'}`}>
-            {selectedModels.map((model, i) => (
-              <MultiResponseCard
-                key={model.id}
-                model={model}
-                response={multiResponses[model.id] || ''}
-                loading={multiLoading[model.id]}
-                isWinner={multiWinner === model.id}
-                showModel={phase === 'voting'}
-                onVote={phase === 'voting' ? () => handleMultiVote(model.id) : undefined}
-                imageUrl={contentType === 'image' ? multiImages[model.id] : undefined}
-              />
-            ))}
+            {selectedModels.map((model, i) => {
+              // Calculate lightbox index for this model's image
+              const lightboxIdx = selectedModels
+                .slice(0, i)
+                .filter(m => multiImages[m.id])
+                .length;
+              return (
+                <MultiResponseCard
+                  key={model.id}
+                  model={model}
+                  response={multiResponses[model.id] || ''}
+                  loading={multiLoading[model.id]}
+                  isWinner={multiWinner === model.id}
+                  showModel={phase === 'voting'}
+                  onVote={phase === 'voting' ? () => handleMultiVote(model.id) : undefined}
+                  imageUrl={contentType === 'image' ? multiImages[model.id] : undefined}
+                  onImageClick={multiImages[model.id] ? () => openLightbox(lightboxIdx) : undefined}
+                />
+              );
+            })}
           </div>
           {phase === 'voting' && <div className="text-center text-arcade-cyan animate-pulse">⬆️ Click on your favorite response! ⬆️</div>}
         </motion.div>
@@ -1033,6 +1133,17 @@ function BattleContent() {
           </div>
         </motion.div>
       )}
+
+      {/* Lightbox for fullscreen image viewing */}
+      <Lightbox
+        images={lightboxImages}
+        currentIndex={lightboxIndex}
+        isOpen={lightboxOpen}
+        onClose={closeLightbox}
+        onNext={nextLightboxImage}
+        onPrev={prevLightboxImage}
+        onGoToIndex={goToLightboxIndex}
+      />
     </main>
   );
 }
@@ -1054,9 +1165,10 @@ function ModelCard({ model, label, onClick, selectable }: { model: Model | null;
   );
 }
 
-function ResponseCard({ label, response, loading, model, isWinner, onVote, imageUrl }: { label: string; response: string; loading: boolean; model: Model | null; isWinner: boolean; onVote?: () => void; imageUrl?: string }) {
+function ResponseCard({ label, response, loading, model, isWinner, onVote, imageUrl, onImageClick }: { label: string; response: string; loading: boolean; model: Model | null; isWinner: boolean; onVote?: () => void; imageUrl?: string; onImageClick?: () => void }) {
   const colorClass = label === 'A' ? 'border-arcade-cyan' : 'border-arcade-pink';
   const bgClass = label === 'A' ? 'bg-arcade-cyan/10' : 'bg-arcade-pink/10';
+  const hasError = response.startsWith('Error:');
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className={`response-card rounded-xl border-2 ${colorClass} ${isWinner ? 'winner-card' : ''} overflow-hidden`}>
       <div className={`p-3 ${bgClass} flex items-center justify-between`}>
@@ -1064,42 +1176,61 @@ function ResponseCard({ label, response, loading, model, isWinner, onVote, image
         {model && <span className="flex items-center gap-2"><span>{model.icon}</span><span className="text-sm">{model.shortName}</span></span>}
         {!model && <span className="text-gray-500 text-sm">??? (Hidden)</span>}
       </div>
-      <div className={`p-4 ${imageUrl ? 'h-auto' : 'h-80'} overflow-y-auto bg-arcade-dark/30`}>
+      <div className={`p-4 h-80 overflow-y-auto bg-arcade-dark/30`}>
         {loading ? (
-          <div className="text-gray-400 typing-cursor flex items-center justify-center h-64">
+          <div className="text-gray-400 typing-cursor flex items-center justify-center h-full">
             {imageUrl ? 'Generating image...' : (response || 'Generating...')}
           </div>
         ) : imageUrl ? (
-          <img src={imageUrl} alt={`Response ${label}`} className="w-full h-auto rounded-lg" />
+          <div className="w-full h-full flex items-center justify-center">
+            <img 
+              src={imageUrl} 
+              alt={`Response ${label}`} 
+              className="max-w-full max-h-full object-contain rounded-lg cursor-pointer hover:opacity-90 transition-opacity" 
+              onClick={onImageClick}
+              title="Click to view fullscreen"
+            />
+          </div>
         ) : (
           <div className="text-white whitespace-pre-wrap">{response}</div>
         )}
       </div>
-      {onVote && <button onClick={onVote} className={`w-full p-4 ${bgClass} hover:bg-opacity-50 transition-colors font-bold uppercase tracking-wider`}>🗳️ Vote for {label}</button>}
+      {onVote && !hasError && <button onClick={onVote} className={`w-full p-4 ${bgClass} hover:bg-opacity-50 transition-colors font-bold uppercase tracking-wider`}>🗳️ Vote for {label}</button>}
+      {onVote && hasError && <div className={`w-full p-4 ${bgClass} opacity-50 text-center font-bold uppercase tracking-wider cursor-not-allowed`}>⚠️ Generation Failed</div>}
       {isWinner && <div className="p-3 bg-arcade-green/20 text-arcade-green text-center font-bold">🏆 WINNER</div>}
     </motion.div>
   );
 }
 
-function MultiResponseCard({ model, response, loading, isWinner, showModel, onVote, imageUrl }: { model: Model; response: string; loading: boolean; isWinner: boolean; showModel: boolean; onVote?: () => void; imageUrl?: string }) {
+function MultiResponseCard({ model, response, loading, isWinner, showModel, onVote, imageUrl, onImageClick }: { model: Model; response: string; loading: boolean; isWinner: boolean; showModel: boolean; onVote?: () => void; imageUrl?: string; onImageClick?: () => void }) {
+  const hasError = response.startsWith('Error:');
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className={`response-card rounded-xl border-2 border-arcade-purple/50 ${isWinner ? 'border-arcade-green bg-arcade-green/10' : ''} overflow-hidden`}>
       <div className="p-3 bg-arcade-purple/10 flex items-center justify-between">
         {showModel ? <span className="flex items-center gap-2"><span>{model.icon}</span><span className="text-sm font-medium">{model.shortName}</span></span> : <span className="text-gray-500 text-sm">??? (Hidden)</span>}
         <span className="text-xs text-arcade-cyan">{model.elo} ELO</span>
       </div>
-      <div className={`p-3 ${imageUrl ? 'h-auto' : 'h-64'} overflow-y-auto bg-arcade-dark/30 text-sm`}>
+      <div className="p-3 h-64 overflow-y-auto bg-arcade-dark/30 text-sm">
         {loading ? (
-          <div className="text-gray-400 typing-cursor flex items-center justify-center h-48">
+          <div className="text-gray-400 typing-cursor flex items-center justify-center h-full">
             {imageUrl ? 'Generating image...' : (response || 'Generating...')}
           </div>
         ) : imageUrl ? (
-          <img src={imageUrl} alt={`Response from ${model.shortName}`} className="w-full h-auto rounded-lg" />
+          <div className="w-full h-full flex items-center justify-center">
+            <img 
+              src={imageUrl} 
+              alt={`Response from ${model.shortName}`} 
+              className="max-w-full max-h-full object-contain rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+              onClick={onImageClick}
+              title="Click to view fullscreen"
+            />
+          </div>
         ) : (
           <div className="text-white whitespace-pre-wrap">{response}</div>
         )}
       </div>
-      {onVote && <button onClick={onVote} className="w-full p-3 bg-arcade-purple/10 hover:bg-arcade-purple/20 transition-colors font-bold text-sm">🗳️ Vote</button>}
+      {onVote && !hasError && <button onClick={onVote} className="w-full p-3 bg-arcade-purple/10 hover:bg-arcade-purple/20 transition-colors font-bold text-sm">🗳️ Vote</button>}
+      {onVote && hasError && <div className="w-full p-3 bg-arcade-purple/10 opacity-50 text-center font-bold text-sm cursor-not-allowed">⚠️ Generation Failed</div>}
       {isWinner && <div className="p-2 bg-arcade-green/20 text-arcade-green text-center font-bold text-sm">🏆 WINNER</div>}
     </motion.div>
   );
